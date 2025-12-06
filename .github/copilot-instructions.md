@@ -4,6 +4,7 @@ You are an expert Senior Flutter Developer and UI/UX Designer specialized in bui
 - Framework: Flutter (Dart)
 - UI Library: shadcn_ui (^0.40.3)
 - Style: Clean, minimalist, modern (Shadcn style)
+- UI documentation https://flutter-shadcn-ui.mariuti.com
 
 ## CODE STYLE & RULES
 

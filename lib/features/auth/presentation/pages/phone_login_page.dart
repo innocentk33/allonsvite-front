@@ -3,6 +3,9 @@ import 'package:flutter/services.dart';
 import 'package:gap/gap.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
+import '../../../../config/app_router.dart';
+import 'otp_page.dart';
+
 /// Formatteur de numéro de téléphone personnalisé
 /// Formate automatiquement le texte en XX XX XX XX XX sans déclencher onChanged
 class _PhoneNumberFormatter extends TextInputFormatter {
@@ -96,7 +99,7 @@ class _PhoneLoginPageState extends State<PhoneLoginPage> {
     setState(() {
       _isLoading = true;
     });
-
+    // Simulation de l'envoi du code
     Future.delayed(const Duration(seconds: 2), () {
       if (!mounted) return;
 
@@ -107,11 +110,16 @@ class _PhoneLoginPageState extends State<PhoneLoginPage> {
       // Simuler un succès
       _showSuccessToast();
 
-      // Redirection vers la page de vérification du code (à implémenter)
-      // Navigator.push(
-      //   context,
-      //   MaterialPageRoute(builder: (context) => VerifyCodePage(phone: phone)),
-      // );
+      // Navigation vers la page de vérification du code
+      Future.delayed(const Duration(milliseconds: 500), () {
+        if (mounted) {
+          final formattedPhone = '+225 ${_phoneController.text}';
+          Navigator.of(context).pushReplacementNamed(
+            AppRouter.otpVerification,
+            arguments: formattedPhone,
+          );
+        }
+      });
     });
   }
 

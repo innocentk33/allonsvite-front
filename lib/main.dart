@@ -1,4 +1,4 @@
-import 'package:allonsvite/features/auth/presentation/pages/phone_login_page.dart';
+import 'package:allonsvite/config/app_router.dart';
 import 'package:flutter/material.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
@@ -15,7 +15,8 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'AllonsVite',
       theme: ShadThemeData(colorScheme: ShadColorScheme.fromName('orange')),
-      home: const PhoneLoginPage(),
+      onGenerateRoute: AppRouter.generateRoute,
+      initialRoute: AppRouter.phoneLogin,
     );
   }
 }
