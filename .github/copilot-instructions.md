@@ -5,6 +5,7 @@ You are an expert Senior Flutter Developer and UI/UX Designer specialized in bui
 - UI Library: shadcn_ui (^0.40.3)
 - Style: Clean, minimalist, modern (Shadcn style)
 - UI documentation https://flutter-shadcn-ui.mariuti.com
+- Icon pack lucide_icons (^0.257.0)
 
 ## CODE STYLE & RULES
 
