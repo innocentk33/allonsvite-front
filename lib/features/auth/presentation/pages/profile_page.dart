@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
+import '../../../../config/app_router.dart';
+
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
 
@@ -66,8 +68,12 @@ class _ProfilePageState extends State<ProfilePage> {
         ),
       );
 
-      // Navigation vers la page suivante
-      // Navigator.pushReplacementNamed(context, '/home');
+      // Navigation vers la page de recherche
+      Future.delayed(const Duration(milliseconds: 500), () {
+        if (mounted) {
+          Navigator.of(context).pushReplacementNamed(AppRouter.searchTrip);
+        }
+      });
     });
   }
 
