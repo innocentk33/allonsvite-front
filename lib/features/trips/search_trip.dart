@@ -14,8 +14,9 @@ class _SearchTripPageState extends State<SearchTripPage> {
   int _currentTabIndex = 0;
   late TextEditingController _departureController;
   late TextEditingController _destinationController;
-  String _selectedDate = "Aujourd'hui";
-  String _selectedTime = 'Maintenant';
+  DateTime _selectedDate = DateTime.now();
+  TimeOfDay _selectedTime = TimeOfDay.now();
+  int _numberOfPeople = 1;
 
   @override
   void initState() {
@@ -35,7 +36,7 @@ class _SearchTripPageState extends State<SearchTripPage> {
     setState(() {
       _currentTabIndex = index;
     });
-    
+
     // Navigation selon l'onglet sélectionné
     switch (index) {
       case 0:
@@ -71,13 +72,12 @@ class _SearchTripPageState extends State<SearchTripPage> {
   }
 
   void _selectDateTime() {
-    // Ouvrir un modal pour sélectionner date et heure
     showShadSheet(
       context: context,
       builder: (context) => _DateTimePickerSheet(
         selectedDate: _selectedDate,
         selectedTime: _selectedTime,
-        onConfirm: (date, time) {
+        onConfirm: (DateTime date, TimeOfDay time) {
           setState(() {
             _selectedDate = date;
             _selectedTime = time;
@@ -87,83 +87,65 @@ class _SearchTripPageState extends State<SearchTripPage> {
     );
   }
 
+  void _selectNumberOfPeople() {
+    showShadSheet(
+      context: context,
+      builder: (context) => _PeoplePickerSheet(
+        selectedNumber: _numberOfPeople,
+        onConfirm: (int number) {
+          setState(() {
+            _numberOfPeople = number;
+          });
+        },
+      ),
+    );
+  }
+
+  String _formatDate(DateTime date) {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final tomorrow = today.add(const Duration(days: 1));
+    final selectedDay = DateTime(date.year, date.month, date.day);
+
+    if (selectedDay == today) {
+      return "Aujourd'hui";
+    } else if (selectedDay == tomorrow) {
+      return 'Demain';
+    } else {
+      return '${date.day}/${date.month}/${date.year}';
+    }
+  }
+
+  String _formatTime(TimeOfDay time) {
+    return '${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}';
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: _buildAppBar(),
-      body: Stack(
-        children: [
-          // Carte en arrière-plan
-          const _MapView(),
-          // Carte de recherche en overlay
-          _SearchCard(
-            departureController: _departureController,
-            destinationController: _destinationController,
-            selectedDate: _selectedDate,
-            selectedTime: _selectedTime,
-            onSearch: _searchTrip,
-            onSelectDateTime: _selectDateTime,
-          ),
-        ],
+      body: SafeArea(
+        child: Stack(
+          children: [
+            // Carte en arrière-plan
+            const _MapView(),
+            // Carte de recherche en overlay
+            _SearchCard(
+              departureController: _departureController,
+              destinationController: _destinationController,
+              selectedDate: _formatDate(_selectedDate),
+              selectedTime: _formatTime(_selectedTime),
+              numberOfPeople: _numberOfPeople,
+              onSearch: _searchTrip,
+              onSelectDateTime: _selectDateTime,
+              onSelectPeople: _selectNumberOfPeople,
+            ),
+          ],
+        ),
       ),
       bottomNavigationBar: _BottomTabBar(
         currentIndex: _currentTabIndex,
         onTabChanged: _onTabChanged,
       ),
-    );
-  }
-
-  PreferredSizeWidget _buildAppBar() {
-    return AppBar(
-      backgroundColor: ShadTheme.of(context).colorScheme.background,
-      elevation: 0,
-      surfaceTintColor: Colors.transparent,
-      leading: Padding(
-        padding: const EdgeInsets.only(left: 8),
-        child: Center(
-          child: CircleAvatar(
-            radius: 18,
-            backgroundColor: ShadTheme.of(context).colorScheme.primary,
-            child: Text(
-              'A',
-              style: ShadTheme.of(context).textTheme.small.copyWith(
-                    color: ShadTheme.of(context).colorScheme.primaryForeground,
-                    fontWeight: FontWeight.bold,
-                  ),
-            ),
-          ),
-        ),
-      ),
-      title: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            lucide.LucideIcons.mapPin,
-            size: 18,
-            color: ShadTheme.of(context).colorScheme.foreground,
-          ),
-          const Gap(8),
-          Text(
-            'Abidjan',
-            style: ShadTheme.of(context).textTheme.p.copyWith(
-                  fontWeight: FontWeight.w600,
-                ),
-          ),
-        ],
-      ),
-      actions: [
-        ShadButton.ghost(
-          onPressed: () {
-            // Ouvrir les notifications
-          },
-          child: Icon(
-            lucide.LucideIcons.bell,
-            size: 20,
-            color: ShadTheme.of(context).colorScheme.foreground,
-          ),
-        ),
-        const Gap(8),
-      ],
     );
   }
 }
@@ -174,16 +156,20 @@ class _SearchCard extends StatelessWidget {
   final TextEditingController destinationController;
   final String selectedDate;
   final String selectedTime;
+  final int numberOfPeople;
   final VoidCallback onSearch;
   final VoidCallback onSelectDateTime;
+  final VoidCallback onSelectPeople;
 
   const _SearchCard({
     required this.departureController,
     required this.destinationController,
     required this.selectedDate,
     required this.selectedTime,
+    required this.numberOfPeople,
     required this.onSearch,
     required this.onSelectDateTime,
+    required this.onSelectPeople,
   });
 
   @override
@@ -216,48 +202,96 @@ class _SearchCard extends StatelessWidget {
                 iconColor: ShadTheme.of(context).colorScheme.destructive,
               ),
               const Gap(16),
-              // Date et heure
-              GestureDetector(
-                onTap: onSelectDateTime,
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 12,
-                  ),
-                  decoration: BoxDecoration(
-                    border: Border.all(
-                      color: ShadTheme.of(context).colorScheme.input,
+              // Date/heure et nombre de personnes
+              Row(
+                children: [
+                  Expanded(
+                    flex: 2,
+                    child: GestureDetector(
+                      onTap: onSelectDateTime,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 12,
+                        ),
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                            color: ShadTheme.of(context).colorScheme.input,
+                          ),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Row(
+                          children: [
+                            Icon(
+                              lucide.LucideIcons.calendar,
+                              size: 18,
+                              color: ShadTheme.of(context)
+                                  .colorScheme
+                                  .mutedForeground,
+                            ),
+                            const Gap(8),
+                            Expanded(
+                              child: Text(
+                                '$selectedDate • $selectedTime',
+                                style: ShadTheme.of(context).textTheme.small,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                            Icon(
+                              lucide.LucideIcons.chevronDown,
+                              size: 16,
+                              color: ShadTheme.of(context)
+                                  .colorScheme
+                                  .mutedForeground,
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
-                    borderRadius: BorderRadius.circular(8),
                   ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Row(
-                        children: [
-                          Icon(
-                            lucide.LucideIcons.calendar,
-                            size: 18,
-                            color: ShadTheme.of(context)
-                                .colorScheme
-                                .mutedForeground,
+                  const Gap(12),
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: onSelectPeople,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 12,
+                        ),
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                            color: ShadTheme.of(context).colorScheme.input,
                           ),
-                          const Gap(8),
-                          Text(
-                            '$selectedDate • $selectedTime',
-                            style: ShadTheme.of(context).textTheme.p,
-                          ),
-                        ],
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Icon(
+                              lucide.LucideIcons.users,
+                              size: 18,
+                              color: ShadTheme.of(context)
+                                  .colorScheme
+                                  .mutedForeground,
+                            ),
+                            const Gap(8),
+                            Text(
+                              '$numberOfPeople',
+                              style: ShadTheme.of(context).textTheme.small,
+                            ),
+                            Icon(
+                              lucide.LucideIcons.chevronDown,
+                              size: 16,
+                              color: ShadTheme.of(context)
+                                  .colorScheme
+                                  .mutedForeground,
+                            ),
+                          ],
+                        ),
                       ),
-                      Icon(
-                        lucide.LucideIcons.chevronRight,
-                        size: 18,
-                        color:
-                            ShadTheme.of(context).colorScheme.mutedForeground,
-                      ),
-                    ],
+                    ),
                   ),
-                ),
+                ],
               ),
               const Gap(20),
               // Bouton de recherche
@@ -477,11 +511,11 @@ class _TabItem extends StatelessWidget {
   }
 }
 
-/// Sheet pour sélectionner date et heure
+/// Sheet pour sélectionner date et heure avec ShadCalendar et ShadTimePicker
 class _DateTimePickerSheet extends StatefulWidget {
-  final String selectedDate;
-  final String selectedTime;
-  final Function(String, String) onConfirm;
+  final DateTime selectedDate;
+  final TimeOfDay selectedTime;
+  final Function(DateTime, TimeOfDay) onConfirm;
 
   const _DateTimePickerSheet({
     required this.selectedDate,
@@ -494,14 +528,14 @@ class _DateTimePickerSheet extends StatefulWidget {
 }
 
 class _DateTimePickerSheetState extends State<_DateTimePickerSheet> {
-  late String _date;
-  late String _time;
+  late DateTime _selectedDate;
+  late TimeOfDay _selectedTime;
 
   @override
   void initState() {
     super.initState();
-    _date = widget.selectedDate;
-    _time = widget.selectedTime;
+    _selectedDate = widget.selectedDate;
+    _selectedTime = widget.selectedTime;
   }
 
   @override
@@ -509,41 +543,51 @@ class _DateTimePickerSheetState extends State<_DateTimePickerSheet> {
     return ShadSheet(
       title: const Text('Choisir la date et l\'heure'),
       description: const Text('Sélectionnez quand vous souhaitez partir'),
-      child: Padding(
+      child: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // Options de date
-            _buildOption(
-              'Aujourd\'hui',
-              _date == 'Aujourd\'hui',
-              () => setState(() => _date = 'Aujourd\'hui'),
-            ),
-            const Gap(8),
-            _buildOption(
-              'Demain',
-              _date == 'Demain',
-              () => setState(() => _date = 'Demain'),
+            // Calendrier
+            ShadCalendar(
+              selected: _selectedDate,
+              onChanged: (date) {
+                if (date != null) {
+                  setState(() {
+                    _selectedDate = date;
+                  });
+                }
+              },
             ),
             const Gap(24),
-            // Options d'heure
-            _buildOption(
-              'Maintenant',
-              _time == 'Maintenant',
-              () => setState(() => _time = 'Maintenant'),
+            // Sélection de l'heure avec ShadTimePicker
+            Text(
+              'Heure',
+              style: ShadTheme.of(context).textTheme.small.copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
             ),
-            const Gap(8),
-            _buildOption(
-              'Dans 1 heure',
-              _time == 'Dans 1 heure',
-              () => setState(() => _time = 'Dans 1 heure'),
+            const Gap(12),
+            ShadTimePicker(
+              initialValue: ShadTimeOfDay(
+                hour: _selectedTime.hour,
+                minute: _selectedTime.minute,
+                second: 0,
+              ),
+              onChanged: (time) {
+                setState(() {
+                  _selectedTime = TimeOfDay(
+                    hour: time.hour,
+                    minute: time.minute,
+                  );
+                });
+              },
             ),
             const Gap(24),
             ShadButton(
               onPressed: () {
-                widget.onConfirm(_date, _time);
+                widget.onConfirm(_selectedDate, _selectedTime);
                 Navigator.pop(context);
               },
               size: ShadButtonSize.lg,
@@ -554,40 +598,91 @@ class _DateTimePickerSheetState extends State<_DateTimePickerSheet> {
       ),
     );
   }
+}
 
-  Widget _buildOption(String label, bool isSelected, VoidCallback onTap) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(8),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        decoration: BoxDecoration(
-          color: isSelected
-              ? ShadTheme.of(context).colorScheme.primary.withValues(alpha: 0.1)
-              : Colors.transparent,
-          border: Border.all(
-            color: isSelected
-                ? ShadTheme.of(context).colorScheme.primary
-                : ShadTheme.of(context).colorScheme.input,
-            width: isSelected ? 2 : 1,
-          ),
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+/// Sheet pour sélectionner le nombre de personnes
+class _PeoplePickerSheet extends StatefulWidget {
+  final int selectedNumber;
+  final Function(int) onConfirm;
+
+  const _PeoplePickerSheet({
+    required this.selectedNumber,
+    required this.onConfirm,
+  });
+
+  @override
+  State<_PeoplePickerSheet> createState() => _PeoplePickerSheetState();
+}
+
+class _PeoplePickerSheetState extends State<_PeoplePickerSheet> {
+  late int _selectedNumber;
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedNumber = widget.selectedNumber;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ShadSheet(
+      title: const Text('Nombre de personnes'),
+      description: const Text('Combien de places souhaitez-vous réserver ?'),
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text(
-              label,
-              style: ShadTheme.of(context).textTheme.p.copyWith(
-                    fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
-                  ),
+            // Sélecteur de nombre
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                ShadButton.outline(
+                  onPressed: _selectedNumber > 1
+                      ? () {
+                          setState(() {
+                            _selectedNumber--;
+                          });
+                        }
+                      : null,
+                  child: const Icon(lucide.LucideIcons.minus, size: 20),
+                ),
+                const Gap(32),
+                Text(
+                  '$_selectedNumber',
+                  style: ShadTheme.of(context).textTheme.h2.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                ),
+                const Gap(32),
+                ShadButton.outline(
+                  onPressed: _selectedNumber < 8
+                      ? () {
+                          setState(() {
+                            _selectedNumber++;
+                          });
+                        }
+                      : null,
+                  child: const Icon(lucide.LucideIcons.plus, size: 20),
+                ),
+              ],
             ),
-            if (isSelected)
-              Icon(
-                lucide.LucideIcons.check,
-                size: 20,
-                color: ShadTheme.of(context).colorScheme.primary,
-              ),
+            const Gap(16),
+            Text(
+              _selectedNumber == 1 ? '1 personne' : '$_selectedNumber personnes',
+              textAlign: TextAlign.center,
+              style: ShadTheme.of(context).textTheme.muted,
+            ),
+            const Gap(32),
+            ShadButton(
+              onPressed: () {
+                widget.onConfirm(_selectedNumber);
+                Navigator.pop(context);
+              },
+              size: ShadButtonSize.lg,
+              child: const Text('Confirmer'),
+            ),
           ],
         ),
       ),
