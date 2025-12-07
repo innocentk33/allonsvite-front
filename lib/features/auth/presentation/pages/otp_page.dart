@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
-import '../../../../config/app_router.dart';
+
+import '../../../../core/config/app_router.dart';
 
 class OtpVerificationPage extends StatefulWidget {
   final String phoneNumber;

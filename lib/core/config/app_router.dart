@@ -3,7 +3,9 @@ import 'package:allonsvite/features/auth/presentation/pages/phone_login_page.dar
 import 'package:allonsvite/features/auth/presentation/pages/otp_page.dart';
 import 'package:allonsvite/features/auth/presentation/pages/profile_page.dart';
 
-import '../features/trips/search_trip.dart';
+import '../../features/trips/search_trip.dart';
+
+
 
 class AppRouter {
   static const String phoneLogin = '/phone-login';

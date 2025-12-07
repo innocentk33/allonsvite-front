@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
-import '../../../../config/app_router.dart';
+
+import '../../../../core/config/app_router.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});

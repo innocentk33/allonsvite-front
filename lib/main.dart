@@ -1,6 +1,7 @@
-import 'package:allonsvite/config/app_router.dart';
 import 'package:flutter/material.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
+
+import 'core/config/app_router.dart';
 
 void main() {
   runApp(const MyApp());

@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:gap/gap.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
-import '../../../../config/app_router.dart';
+import '../../../../core/config/app_router.dart';
 import 'otp_page.dart';
 
 /// Formatteur de numéro de téléphone personnalisé
