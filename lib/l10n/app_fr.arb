@@ -15,7 +15,7 @@
   "resendCode": "Renvoyer le code dans",
   "verificationCode": "Code de vérification",
   "verifyCode": "Vérifier le code",
-  "pleaseEnterYourVerificationCode": "Veuillez saisir le code que nous venons d'envoyer à ",
+  "pleaseEnterYourVerificationCode": "Veuillez saisir le code que nous venons d'envoyer au ",
   "name": "Nom",
   "firstName": "Prénom",
   "lastName": "Nom de famille",

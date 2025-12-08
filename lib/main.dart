@@ -28,7 +28,6 @@ class MyApp extends StatelessWidget {
       ],
       supportedLocales: AppLocalizations.supportedLocales,
       locale: const Locale('fr'),
-      home: MiniDesignSystem(),
     );
   }
 }

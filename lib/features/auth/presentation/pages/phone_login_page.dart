@@ -116,7 +116,7 @@ class _PhoneLoginPageState extends State<PhoneLoginPage> {
     });
 
     // Simulation de l'envoi du code
-    Future.delayed(const Duration(seconds: 2), () {
+    Future.delayed(const Duration(seconds: 1), () {
       if (!mounted) return;
 
       setState(() {

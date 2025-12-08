@@ -11,7 +11,7 @@ extension BuildContextExtensions on BuildContext {
 
   // Accès direct aux couleurs (ColorScheme)
   // Utilisation : context.colors.primary
-  ColorScheme get colors => Theme.of(this).colorScheme;
+  ColorScheme get colorScheme => Theme.of(this).colorScheme;
 
   // Accès direct aux textes (TextTheme)
   // Utilisation : context.textTheme.headlineMedium

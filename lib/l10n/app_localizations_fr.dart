@@ -50,7 +50,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get pleaseEnterYourVerificationCode =>
-      'Veuillez saisir le code que nous venons d\'envoyer à ';
+      'Veuillez saisir le code que nous venons d\'envoyer au ';
 
   @override
   String get name => 'Nom';

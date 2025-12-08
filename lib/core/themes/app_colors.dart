@@ -10,6 +10,7 @@ class AppColors {
   static const Color _avLightGrey = Color(0xFFF5F5F5);  // Fond gris
   static const Color _avOrange = Color(0xFFF2640E);     // Accent / Action
   static const Color _avRed = Color(0xFFFF0000);        // Erreur
+  static const Color _borderColor = Color(0xFF98A3A3);  // Bordure
 
   static const ColorScheme lightScheme = ColorScheme(
     brightness: Brightness.light,
@@ -37,7 +38,9 @@ class AppColors {
     onSurfaceVariant: _textSecondary, // Texte secondaire (sous-titres)
 
 
-    outline: _avLightGrey, // Utilisé pour les bordures discrètes
+    outline: _borderColor, // Utilisé pour les bordures
+    outlineVariant: _avLightGrey, // Utilisé pour les bordures discrètes
+
 
 
     // Erreurs
