@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart' as lucide;
 import '../../core/extension/build_context_ext.dart';
 import '../../core/themes/app_spacing.dart';
+import 'location_search_page.dart';
 
 class SearchTrip extends StatefulWidget {
   const SearchTrip({super.key});
@@ -14,6 +15,7 @@ class _SearchTripState extends State<SearchTrip> {
   late TextEditingController _fromController;
   late TextEditingController _toController;
   int _numberOfPeople = 0;
+  DateTime _selectedDate = DateTime.now();
 
   @override
   void initState() {
@@ -31,14 +33,195 @@ class _SearchTripState extends State<SearchTrip> {
 
   void _swapLocations() {
     final temp = _fromController.text;
-    _fromController.text = _toController.text;
-    _toController.text = temp;
+    setState(() {
+      _fromController.text = _toController.text;
+      _toController.text = temp;
+    });
+  }
+
+  Future<void> _selectFromLocation() async {
+    debugPrint('_selectFromLocation() called');
+    final location = await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const LocationSearchPage()),
+    );
+    if (location != null) {
+      setState(() {
+        _fromController.text = location;
+      });
+    }
+  }
+
+  Future<void> _selectToLocation() async {
+    final location = await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const LocationSearchPage()),
+    );
+    if (location != null) {
+      setState(() {
+        _toController.text = location;
+      });
+    }
+  }
+
+  Future<void> _selectDate() async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: _selectedDate,
+      firstDate: DateTime.now(),
+      lastDate: DateTime.now().add(const Duration(days: 365)),
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: ColorScheme.light(
+              primary: context.colorScheme.primary,
+              onPrimary: context.colorScheme.onPrimary,
+            ),
+          ),
+          child: child!,
+        );
+      },
+    );
+    if (picked != null && picked != _selectedDate) {
+      setState(() {
+        _selectedDate = picked;
+      });
+    }
+  }
+
+  String _formatDate(DateTime date) {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final tomorrow = today.add(const Duration(days: 1));
+    final selectedDay = DateTime(date.year, date.month, date.day);
+
+    if (selectedDay == today) {
+      return 'Today';
+    } else if (selectedDay == tomorrow) {
+      return 'Tomorrow';
+    } else {
+      return '${date.day}/${date.month}/${date.year}';
+    }
   }
 
   void _findRide() {
     // Action pour trouver un trajet
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Recherche de trajet...')),
+    );
+  }
+
+  void _showPeopleDialog() {
+    int tempPeople = _numberOfPeople;
+
+    showDialog(
+      context: context,
+      builder: (context) => Dialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: StatefulBuilder(
+          builder: (context, setState) => Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20),
+            ),
+            padding: AppSpacings.pL,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                AppSpacings.gapL,
+                Text(
+                  'Combien de sièges voulez-vous ?',
+                  style: context.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                AppSpacings.gapXL,
+                // Sélecteur avec - chiffre +
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    // Bouton moins
+                    SizedBox(
+                      width: 50,
+                      height: 50,
+                      child: ElevatedButton(
+                        onPressed: tempPeople > 0
+                            ? () => setState(() => tempPeople--)
+                            : null,
+                        style: ElevatedButton.styleFrom(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          padding: EdgeInsets.zero,
+                        ),
+                        child: const Text(
+                          '−',
+                          style: TextStyle(fontSize: 24),
+                        ),
+                      ),
+                    ),
+                    AppSpacings.gapXL,
+                    // Chiffre
+                    Text(
+                      '$tempPeople',
+                      style: context.textTheme.displaySmall?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    AppSpacings.gapXL,
+                    // Bouton plus
+                    SizedBox(
+                      width: 50,
+                      height: 50,
+                      child: ElevatedButton(
+                        onPressed: tempPeople < 8
+                            ? () => setState(() => tempPeople++)
+                            : null,
+                        style: ElevatedButton.styleFrom(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          padding: EdgeInsets.zero,
+                        ),
+                        child: const Text(
+                          '+',
+                          style: TextStyle(fontSize: 24),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                AppSpacings.gapXL,
+                // Bouton de confirmation
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      setState(() {
+                        _numberOfPeople = tempPeople;
+                      });
+                      Navigator.pop(context);
+                    },
+                    style: ElevatedButton.styleFrom(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                    ),
+                    child: Text(
+                      'Confirmer',
+                      style: context.textTheme.labelLarge,
+                    ),
+                  ),
+                ),
+                AppSpacings.gapL,
+              ],
+            ),
+          ),
+        ),
+      ),
     );
   }
 
@@ -104,9 +287,13 @@ class _SearchTripState extends State<SearchTrip> {
                               Row(
                                 children: [
                                   Expanded(
-                                    child: _SearchTextField(
-                                      controller: _fromController,
-                                      placeholder: 'From',
+                                    child: GestureDetector(
+                                      onTap: _selectFromLocation,
+                                      child: _SearchTextField(
+                                        controller: _fromController,
+                                        placeholder: 'From',
+                                        readOnly: true,
+                                      ),
                                     ),
                                   ),
                                   AppSpacings.gapS,
@@ -120,44 +307,51 @@ class _SearchTripState extends State<SearchTrip> {
                                   ),
                                 ],
                               ),
+                              // Séparateur
+                              const Divider(height: 1),
                               AppSpacings.gapM,
                               // Champ To
-                              _SearchTextField(
-                                controller: _toController,
-                                placeholder: 'To',
+                              GestureDetector(
+                                onTap: _selectToLocation,
+                                child: _SearchTextField(
+                                  controller: _toController,
+                                  placeholder: 'To',
+                                  readOnly: true,
+                                ),
                               ),
                               AppSpacings.gapM,
-                              // Date
-                              _InfoRow(
-                                icon: lucide.LucideIcons.calendarSearch,
-                                label: 'Today',
+                              // Séparateur
+                              const Divider(height: 1),
+                              AppSpacings.gapM,
+                              // Date - cliquable
+                              GestureDetector(
+                                onTap: _selectDate,
+                                child: _InfoRow(
+                                  icon: lucide.LucideIcons.calendar,
+                                  label: _formatDate(_selectedDate),
+                                ),
                               ),
                               AppSpacings.gapM,
-                              // Heure et nombre de personnes
-                              Row(
-                                children: [
-                                  Expanded(
-                                    child: _InfoRow(
-                                      icon: lucide.LucideIcons.clock,
-                                      label: 'Time',
+                              // Séparateur
+                              const Divider(height: 1),
+                              AppSpacings.gapM,
+                              // Nombre de personnes - cliquable
+                              GestureDetector(
+                                onTap: _showPeopleDialog,
+                                child: Row(
+                                  children: [
+                                    Icon(
+                                      lucide.LucideIcons.users,
+                                      size: 18,
+                                      color: context.colorScheme.onSurfaceVariant,
                                     ),
-                                  ),
-                                  AppSpacings.gapL,
-                                  Row(
-                                    children: [
-                                      Icon(
-                                        lucide.LucideIcons.userCircle,
-                                        size: 18,
-                                        color: context.colorScheme.onSurfaceVariant,
-                                      ),
-                                      AppSpacings.gapS,
-                                      Text(
-                                        '$_numberOfPeople',
-                                        style: context.textTheme.bodyMedium,
-                                      ),
-                                    ],
-                                  ),
-                                ],
+                                    AppSpacings.gapS,
+                                    Text(
+                                      '$_numberOfPeople ${_numberOfPeople == 1 ? 'personne' : 'personnes'}',
+                                      style: context.textTheme.bodyMedium,
+                                    ),
+                                  ],
+                                ),
                               ),
                             ],
                           ),
@@ -205,16 +399,19 @@ class _SearchTripState extends State<SearchTrip> {
 class _SearchTextField extends StatelessWidget {
   final TextEditingController controller;
   final String placeholder;
+  final bool readOnly;
 
   const _SearchTextField({
     required this.controller,
     required this.placeholder,
+    this.readOnly = false,
   });
 
   @override
   Widget build(BuildContext context) {
     return TextField(
       controller: controller,
+      readOnly: readOnly,
       decoration: InputDecoration(
         hintText: placeholder,
         hintStyle: context.textTheme.bodyLarge?.copyWith(
