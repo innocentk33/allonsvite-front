@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:allonsvite/features/auth/presentation/pages/phone_login_page.dart';
 
 import '../../features/auth/presentation/pages/otp_verification_page.dart';
+import '../../features/navigation/home_page.dart';
 
 class AppRouter {
   static const String phoneLogin = '/phone-login';
@@ -10,6 +11,7 @@ class AppRouter {
   static const String profile = '/profile';
   static const String home = '/home';
   static const String searchTrip = '/search-trip';
+
 
   static Route<dynamic> generateRoute(RouteSettings settings) {
     switch (settings.name) {
@@ -29,6 +31,12 @@ class AppRouter {
           builder: (_) => const CreateProfilPage(),
           settings: settings,
         );
+        case home:
+        return MaterialPageRoute(
+          builder: (_) => const HomePage(),
+          settings: settings,
+        );
+
       default:
         return MaterialPageRoute(
           builder: (_) => const PhoneLoginPage(),

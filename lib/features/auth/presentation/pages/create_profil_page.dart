@@ -97,7 +97,7 @@ class _CreateProfilPageState extends State<CreateProfilPage> {
       // Navigation vers la page de recherche de trajet
       Future.delayed(const Duration(milliseconds: 500), () {
         if (mounted) {
-          Navigator.of(context).pushReplacementNamed(AppRouter.searchTrip);
+          Navigator.of(context).pushReplacementNamed(AppRouter.home);
         }
       });
     });
