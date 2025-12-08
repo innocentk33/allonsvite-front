@@ -1,3 +1,4 @@
+import 'package:allonsvite/core/extension/build_context_ext.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -20,11 +21,15 @@ class MiniDesignSystem extends StatelessWidget {
                   context,
                 ).textTheme.headlineMedium, // Utilisera Jokker
               ),
-              Text('Mon titre Inter',style: GoogleFonts.inter(fontSize: 28,fontWeight: .w600),),
+              Text(
+                'Mon titre Inter',
+                style: GoogleFonts.inter(fontSize: 28, fontWeight: .w600),
+              ),
               Text(
                 "Ceci est un paragraphe écrit avec la police Inter. Elle est très lisible pour les longues descriptions.",
                 style: Theme.of(context).textTheme.bodyLarge, // Utilisera Inter
               ),
+              Text(context.l10n.loginButton),
 
               ElevatedButton(
                 onPressed: () {},
@@ -32,8 +37,8 @@ class MiniDesignSystem extends StatelessWidget {
                   "Bouton Jokker",
                 ), // Utilisera Jokker (défini dans le thème bouton)
               ),
-              OutlinedButton(onPressed: (){}, child: Text('Outline boutton')),
-              FilledButton(onPressed: (){}, child: Text('Filled boutton')),
+              OutlinedButton(onPressed: () {}, child: Text('Outline boutton')),
+              FilledButton(onPressed: () {}, child: Text('Filled boutton')),
             ],
           ),
         ),

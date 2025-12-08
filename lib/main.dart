@@ -1,7 +1,7 @@
+import 'package:allonsvite/l10n/app_localizations.dart';
 import 'package:allonsvite/widgets/mini_design_system.dart';
 import 'package:flutter/material.dart';
-import 'package:shadcn_ui/shadcn_ui.dart';
-
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'core/config/app_router.dart';
 import 'core/themes/app_theme.dart';
 
@@ -20,6 +20,14 @@ class MyApp extends StatelessWidget {
       onGenerateRoute: AppRouter.generateRoute,
       theme: AppTheme.lightTheme,
       //initialRoute: AppRouter.phoneLogin,
+      localizationsDelegates: [
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: AppLocalizations.supportedLocales,
+      locale: const Locale('fr'),
       home: MiniDesignSystem(),
     );
   }
