@@ -104,6 +104,276 @@ abstract class AppLocalizations {
   /// **'Hello World'**
   String get helloWorld;
 
+  /// No description provided for @slogan.
+  ///
+  /// In en, this message translates to:
+  /// **'Chap Chap'**
+  String get slogan;
+
+  /// No description provided for @phoneLoginTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter Your Contact Details'**
+  String get phoneLoginTitle;
+
+  /// No description provided for @phoneLoginSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your phone number we will send you a verification code'**
+  String get phoneLoginSubtitle;
+
+  /// No description provided for @sendCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Send verification code'**
+  String get sendCode;
+
+  /// No description provided for @phoneNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone Number'**
+  String get phoneNumber;
+
+  /// No description provided for @verificationCodePlaceholder.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter verification code'**
+  String get verificationCodePlaceholder;
+
+  /// No description provided for @verificationCodeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter Verification Code'**
+  String get verificationCodeTitle;
+
+  /// No description provided for @sendCodeAgain.
+  ///
+  /// In en, this message translates to:
+  /// **'Send code again'**
+  String get sendCodeAgain;
+
+  /// No description provided for @sendYouSMS.
+  ///
+  /// In en, this message translates to:
+  /// **'We sent you an SMS'**
+  String get sendYouSMS;
+
+  /// No description provided for @resendCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Resend code in'**
+  String get resendCode;
+
+  /// No description provided for @verificationCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Verification Code'**
+  String get verificationCode;
+
+  /// No description provided for @verifyCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Verify code'**
+  String get verifyCode;
+
+  /// No description provided for @pleaseEnterYourVerificationCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter the code we just sent to '**
+  String get pleaseEnterYourVerificationCode;
+
+  /// No description provided for @name.
+  ///
+  /// In en, this message translates to:
+  /// **'Name'**
+  String get name;
+
+  /// No description provided for @firstName.
+  ///
+  /// In en, this message translates to:
+  /// **'First Name'**
+  String get firstName;
+
+  /// No description provided for @lastName.
+  ///
+  /// In en, this message translates to:
+  /// **'Last Name'**
+  String get lastName;
+
+  /// No description provided for @email.
+  ///
+  /// In en, this message translates to:
+  /// **'Email'**
+  String get email;
+
+  /// No description provided for @password.
+  ///
+  /// In en, this message translates to:
+  /// **'Password'**
+  String get password;
+
+  /// No description provided for @confirmPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm Password'**
+  String get confirmPassword;
+
+  /// No description provided for @createAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Create Account'**
+  String get createAccount;
+
+  /// No description provided for @next.
+  ///
+  /// In en, this message translates to:
+  /// **'Next'**
+  String get next;
+
+  /// No description provided for @alreadyHaveAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Already have an account?'**
+  String get alreadyHaveAccount;
+
+  /// No description provided for @login.
+  ///
+  /// In en, this message translates to:
+  /// **'Login'**
+  String get login;
+
+  /// No description provided for @logout.
+  ///
+  /// In en, this message translates to:
+  /// **'Logout'**
+  String get logout;
+
+  /// No description provided for @profile.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile'**
+  String get profile;
+
+  /// No description provided for @settings.
+  ///
+  /// In en, this message translates to:
+  /// **'Settings'**
+  String get settings;
+
+  /// No description provided for @byCreatingAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'By creating an account you agree to our'**
+  String get byCreatingAccount;
+
+  /// No description provided for @termsOfService.
+  ///
+  /// In en, this message translates to:
+  /// **'Terms of Service'**
+  String get termsOfService;
+
+  /// No description provided for @termOfUs.
+  ///
+  /// In en, this message translates to:
+  /// **'Terms of Use'**
+  String get termOfUs;
+
+  /// No description provided for @and.
+  ///
+  /// In en, this message translates to:
+  /// **'and'**
+  String get and;
+
+  /// No description provided for @privacyPolicy.
+  ///
+  /// In en, this message translates to:
+  /// **'Privacy Policy'**
+  String get privacyPolicy;
+
+  /// No description provided for @forgotPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Forgot Password?'**
+  String get forgotPassword;
+
+  /// No description provided for @backToLogin.
+  ///
+  /// In en, this message translates to:
+  /// **'Back to Login'**
+  String get backToLogin;
+
+  /// No description provided for @shareLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Share Location'**
+  String get shareLocation;
+
+  /// No description provided for @location.
+  ///
+  /// In en, this message translates to:
+  /// **'Location'**
+  String get location;
+
+  /// No description provided for @man.
+  ///
+  /// In en, this message translates to:
+  /// **'Man'**
+  String get man;
+
+  /// No description provided for @woman.
+  ///
+  /// In en, this message translates to:
+  /// **'Woman'**
+  String get woman;
+
+  /// No description provided for @addPhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Photo'**
+  String get addPhoto;
+
+  /// No description provided for @uploadPhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Upload Photo'**
+  String get uploadPhoto;
+
+  /// No description provided for @addProfilePicture.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Profile Picture'**
+  String get addProfilePicture;
+
+  /// No description provided for @uploadProfilePicture.
+  ///
+  /// In en, this message translates to:
+  /// **'Upload Profile Picture'**
+  String get uploadProfilePicture;
+
+  /// No description provided for @takeASelfie.
+  ///
+  /// In en, this message translates to:
+  /// **'Take a selfie'**
+  String get takeASelfie;
+
+  /// No description provided for @chooseFormGallery.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose from Gallery'**
+  String get chooseFormGallery;
+
+  /// No description provided for @takeAPhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Take a Photo'**
+  String get takeAPhoto;
+
+  /// No description provided for @takePhotoMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Help drivers or riders identify you more easily, this increases trust.'**
+  String get takePhotoMessage;
+
   /// No description provided for @welcomeMessage.
   ///
   /// In en, this message translates to:
@@ -115,6 +385,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Log In'**
   String get loginButton;
+
+  /// No description provided for @trips.
+  ///
+  /// In en, this message translates to:
+  /// **'trips'**
+  String get trips;
 }
 
 class _AppLocalizationsDelegate

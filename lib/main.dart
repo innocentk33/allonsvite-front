@@ -19,7 +19,7 @@ class MyApp extends StatelessWidget {
       title: 'AllonsVite',
       onGenerateRoute: AppRouter.generateRoute,
       theme: AppTheme.lightTheme,
-      //initialRoute: AppRouter.phoneLogin,
+      initialRoute: AppRouter.phoneLogin,
       localizationsDelegates: [
         AppLocalizations.delegate,
         GlobalMaterialLocalizations.delegate,

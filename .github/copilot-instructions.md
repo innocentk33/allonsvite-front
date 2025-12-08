@@ -25,7 +25,7 @@ You are an expert Senior Flutter Developer and UI/UX Designer specialized in bui
 - **Example:**
 ```dart
   // WRONG
-  class MyWidget extends StatelessWidget { ... }
+  class MyWidget extends StatelessWidget {  }
 
   // RIGHT
   class MyWidget extends ConsumerWidget {
