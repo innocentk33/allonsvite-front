@@ -1,5 +1,4 @@
 import 'package:allonsvite/l10n/app_localizations.dart';
-import 'package:allonsvite/widgets/mini_design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'core/config/app_router.dart';

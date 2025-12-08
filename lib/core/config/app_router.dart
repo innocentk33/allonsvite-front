@@ -1,3 +1,4 @@
+import 'package:allonsvite/features/auth/presentation/pages/create_profil_page.dart';
 import 'package:flutter/material.dart';
 import 'package:allonsvite/features/auth/presentation/pages/phone_login_page.dart';
 
@@ -21,6 +22,11 @@ class AppRouter {
         final phoneNumber = settings.arguments as String? ?? '+225 XX XX XX XX';
         return MaterialPageRoute(
           builder: (_) => OtpVerificationPage(phoneNumber: phoneNumber),
+          settings: settings,
+        );
+        case profile:
+        return MaterialPageRoute(
+          builder: (_) => const CreateProfilPage(),
           settings: settings,
         );
       default:
