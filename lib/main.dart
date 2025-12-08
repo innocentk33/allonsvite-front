@@ -1,7 +1,9 @@
+import 'package:allonsvite/widgets/mini_design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
 import 'core/config/app_router.dart';
+import 'core/themes/app_theme.dart';
 
 void main() {
   runApp(const MyApp());
@@ -12,12 +14,13 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ShadApp(
+    return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'AllonsVite',
-      theme: ShadThemeData(colorScheme: ShadColorScheme.fromName('orange')),
       onGenerateRoute: AppRouter.generateRoute,
-      initialRoute: AppRouter.phoneLogin,
+      theme: AppTheme.lightTheme,
+      //initialRoute: AppRouter.phoneLogin,
+      home: MiniDesignSystem(),
     );
   }
 }
