@@ -106,9 +106,7 @@ class _SearchTripState extends State<SearchTrip> {
 
   void _findRide() {
     // Action pour trouver un trajet
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Recherche de trajet...')),
-    );
+    Navigator.of(context).pushNamed('/finding-ride');
   }
 
   void _showPeopleDialog() {
