@@ -18,10 +18,12 @@ You are an expert Senior Flutter Developer and UI/UX Designer specialized in bui
 - **Imports:** Use relative imports for files within the same feature.
 
 ### 2. State Management (Riverpod) - STRICT
-- **Generation:** ALWAYS use `@riverpod` annotations and code generation (`flutter_pub_run_build_runner`).
+- **Command:** ALWAYS use `fvm` before run any command in terminal and code generation exmple : (`fvm flutter pub get`).
+- **Generation:** ALWAYS use `@riverpod` annotations and code generation (`fvm dart run build_runner watch --delete-conflicting-outputs`).
 - **Widgets:** Use `ConsumerWidget` instead of `StatelessWidget` when accessing state.
 - **Ref:** Use `WidgetRef ref` in the `build` method.
 - **Async:** When using `FutureProvider` or `StreamProvider`, ALWAYS handle the `AsyncValue` states (data, error, loading) in the UI using pattern matching (`.when`).
+- 
 - **Example:**
 ```dart
   // WRONG

@@ -1,11 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:allonsvite/core/themes/app_spacing.dart';
 import 'package:allonsvite/core/extension/build_context_ext.dart';
 import 'package:allonsvite/core/widgets/header_with_subtitle.dart';
 import 'package:allonsvite/core/widgets/button_with_loading.dart';
-import 'package:allonsvite/core/config/app_router.dart';
 
-class OtpVerificationPage extends StatefulWidget {
+
+import '../../../../core/router/app_router.dart';
+import '../providers/auth_controller.dart';
+
+
+class OtpVerificationPage extends ConsumerStatefulWidget {
   final String phoneNumber;
 
   const OtpVerificationPage({
@@ -14,22 +20,21 @@ class OtpVerificationPage extends StatefulWidget {
   });
 
   @override
-  State<OtpVerificationPage> createState() => _OtpVerificationPageState();
+  ConsumerState<OtpVerificationPage> createState() => _OtpVerificationPageState();
 }
 
-class _OtpVerificationPageState extends State<OtpVerificationPage> {
+class _OtpVerificationPageState extends ConsumerState<OtpVerificationPage> {
+  // ...existing code...
   late List<TextEditingController> _otpControllers;
   late List<FocusNode> _otpFocusNodes;
   String? _errorMessage;
-  bool _isLoading = false;
   late int _remainingSeconds;
   late int _totalSeconds;
   bool _canResend = false;
   bool _canGoBack = false;
 
-  static const int _otpDuration = 10; // 2 minutes
+  static const int _otpDuration = 120; // 2 minutes
   static const int _otpLength = 6;
-  static const String _validOtpCode = '123456';
 
   @override
   void initState() {
@@ -113,7 +118,7 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
   }
 
   /// Valide et vérifie le code OTP
-  void _verifyOtp() {
+  Future<void> _verifyOtp() async {
     final otpCode = _getOtpCode();
 
     if (otpCode.length < _otpLength) {
@@ -124,15 +129,23 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
     }
 
     setState(() {
-      _isLoading = true;
       _errorMessage = null;
     });
 
-    // Simulation de la vérification
-    Future.delayed(const Duration(seconds: 2), () {
-      if (!mounted) return;
+    // Appel au provider pour vérifier l'OTP
+    await ref.read(otpVerificationProvider.notifier).verifyOtp(
+      widget.phoneNumber,
+      otpCode,
+    );
 
-      if (otpCode == _validOtpCode) {
+    if (!mounted) return;
+
+    // Vérifier l'état après la vérification
+    final verificationState = ref.read(otpVerificationProvider);
+
+    verificationState.when(
+      data: (_) {
+        // Succès
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Code vérifié avec succès !'),
@@ -140,48 +153,76 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
           ),
         );
 
-        // Navigation vers la page de profil
         Future.delayed(const Duration(milliseconds: 500), () {
           if (mounted) {
-            Navigator.of(context).pushReplacementNamed(AppRouter.profile);
+            context.replace(AppRoutes.profile);
           }
         });
-      } else {
+      },
+      loading: () {
+        // Ne rien faire, le bouton affiche déjà le loading
+      },
+      error: (error, _) {
+        // Erreur
         setState(() {
-          _isLoading = false;
-          _errorMessage = 'Code incorrect, réessayez';
+          _errorMessage = error.toString();
         });
-      }
-    });
+      },
+    );
   }
 
   /// Renvoie le code OTP
-  void _resendOtp() {
+  Future<void> _resendOtp() async {
     if (!_canResend) return;
 
     setState(() {
-      // Réinitialiser tous les champs
       for (var controller in _otpControllers) {
         controller.clear();
       }
       _errorMessage = null;
     });
 
-    _startCountdown();
+    // Appel au provider pour renvoyer l'OTP
+    await ref.read(otpRequestProvider.notifier).requestOtp(widget.phoneNumber);
 
-    // Auto-focus le premier champ
-    _otpFocusNodes[0].requestFocus();
+    if (!mounted) return;
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Code renvoyé'),
-        duration: Duration(seconds: 2),
-      ),
+    // Vérifier l'état après la requête
+    final otpState = ref.read(otpRequestProvider);
+
+    otpState.when(
+      data: (_) {
+        // Succès
+        _startCountdown();
+        _otpFocusNodes[0].requestFocus();
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Code renvoyé'),
+            duration: Duration(seconds: 2),
+          ),
+        );
+      },
+      loading: () {
+        // Ne rien faire
+      },
+      error: (error, _) {
+        // Erreur
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(error.toString()),
+            backgroundColor: Colors.red,
+          ),
+        );
+      },
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    final verificationState = ref.watch(otpVerificationProvider);
+    final isLoading = verificationState.isLoading;
+
     return PopScope(
       canPop: _canGoBack,
       child: Scaffold(
@@ -230,8 +271,8 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
               Padding(
                 padding: const EdgeInsets.all(AppSpacings.l),
                 child: ButtonWithLoading(
-                  isLoading: _isLoading,
-                  onPressed: _verifyOtp,
+                  isLoading: isLoading,
+                  onPressed: () => _verifyOtp(),
                   buttonText: context.l10n.verifyCode,
                 ),
               ),

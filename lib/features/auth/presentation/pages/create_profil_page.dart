@@ -3,7 +3,10 @@ import 'package:allonsvite/core/extension/build_context_ext.dart';
 import 'package:allonsvite/core/themes/app_spacing.dart';
 import 'package:allonsvite/core/widgets/header_with_subtitle.dart';
 import 'package:allonsvite/core/widgets/button_with_loading.dart';
-import 'package:allonsvite/core/config/app_router.dart';
+import 'package:go_router/go_router.dart';
+
+import '../../../../core/router/app_router.dart';
+
 
 class CreateProfilPage extends StatefulWidget {
   const CreateProfilPage({super.key});
@@ -97,7 +100,7 @@ class _CreateProfilPageState extends State<CreateProfilPage> {
       // Navigation vers la page de recherche de trajet
       Future.delayed(const Duration(milliseconds: 500), () {
         if (mounted) {
-          Navigator.of(context).pushReplacementNamed(AppRouter.home);
+          context.go(AppRoutes.home);
         }
       });
     });

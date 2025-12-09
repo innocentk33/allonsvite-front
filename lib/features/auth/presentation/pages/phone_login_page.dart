@@ -2,23 +2,27 @@ import 'package:allonsvite/core/extension/build_context_ext.dart';
 import 'package:allonsvite/core/widgets/button_with_loading.dart';
 import 'package:allonsvite/core/widgets/header_with_subtitle.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:allonsvite/core/themes/app_spacing.dart';
-import 'package:allonsvite/core/config/app_router.dart';
 
+
+import '../../../../core/router/app_router.dart';
+import '../providers/auth_controller.dart';
 import '../widgets/phone_input_field.dart';
 
-class PhoneLoginPage extends StatefulWidget {
+
+class PhoneLoginPage extends ConsumerStatefulWidget {
   const PhoneLoginPage({super.key});
 
   @override
-  State<PhoneLoginPage> createState() => _PhoneLoginPageState();
+  ConsumerState<PhoneLoginPage> createState() => _PhoneLoginPageState();
 }
 
-class _PhoneLoginPageState extends State<PhoneLoginPage> {
+class _PhoneLoginPageState extends ConsumerState<PhoneLoginPage> {
   late TextEditingController _phoneController;
   late FocusNode _phoneFocusNode;
   String? _errorMessage;
-  bool _isLoading = false;
 
   @override
   void initState() {
@@ -107,45 +111,62 @@ class _PhoneLoginPageState extends State<PhoneLoginPage> {
   }
 
   /// Envoie le code de vérification
-  void _sendVerificationCode() {
+  Future<void> _sendVerificationCode() async {
     if (!_validatePhone()) return;
 
     setState(() {
-      _isLoading = true;
       _errorMessage = null;
     });
 
-    // Simulation de l'envoi du code
-    Future.delayed(const Duration(seconds: 1), () {
-      if (!mounted) return;
+    final phone = _phoneController.text.replaceAll(' ', '');
 
-      setState(() {
-        _isLoading = false;
-      });
+    // Appel au provider pour demander l'OTP
+    await ref.read(otpRequestProvider.notifier).requestOtp(phone);
 
-      // Afficher un message de succès
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Code envoyé par SMS'),
-          duration: Duration(seconds: 2),
-        ),
-      );
+    if (!mounted) return;
 
-      // Navigation vers la page OTP
-      Future.delayed(const Duration(milliseconds: 500), () {
-        if (mounted) {
-          final formattedPhone = '+225 ${_phoneController.text}';
-          Navigator.of(context).pushReplacementNamed(
-            AppRouter.otpVerification,
-            arguments: formattedPhone,
-          );
-        }
-      });
-    });
+    // Vérifier l'état après la requête
+    final otpState = ref.read(otpRequestProvider);
+
+    otpState.when(
+      data: (_) {
+        // Succès
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Code envoyé par SMS'),
+            duration: Duration(seconds: 2),
+          ),
+        );
+
+        Future.delayed(const Duration(milliseconds: 500), () {
+          if (mounted) {
+            context.push(AppRoutes.otpVerification, extra: phone);
+          }
+        });
+      },
+      loading: () {
+        // Ne rien faire, le bouton affiche déjà le loading
+      },
+      error: (error, _) {
+        // Erreur
+        setState(() {
+          _errorMessage = error.toString();
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(error.toString()),
+            backgroundColor: Colors.red,
+          ),
+        );
+      },
+    );
   }
 
   @override
   Widget build(BuildContext context) {
+    final otpRequestState = ref.watch(otpRequestProvider);
+    final isLoading = otpRequestState.isLoading;
+
     return Scaffold(
       body: SafeArea(
         child: Column(
@@ -181,8 +202,8 @@ class _PhoneLoginPageState extends State<PhoneLoginPage> {
             Padding(
               padding: const EdgeInsets.all(AppSpacings.l),
               child: ButtonWithLoading(
-                isLoading: _isLoading,
-                onPressed: _sendVerificationCode,
+                isLoading: isLoading,
+                onPressed: () => _sendVerificationCode(),
                 buttonText: context.l10n.sendCode,
               ),
             ),
