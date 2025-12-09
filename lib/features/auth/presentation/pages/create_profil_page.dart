@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:allonsvite/core/extension/build_context_ext.dart';
 import 'package:allonsvite/core/themes/app_spacing.dart';
-import 'package:allonsvite/widgets/header_with_subtitle.dart';
-import 'package:allonsvite/widgets/button_with_loading.dart';
+import 'package:allonsvite/core/widgets/header_with_subtitle.dart';
+import 'package:allonsvite/core/widgets/button_with_loading.dart';
 import 'package:allonsvite/core/config/app_router.dart';
 
 class CreateProfilPage extends StatefulWidget {
