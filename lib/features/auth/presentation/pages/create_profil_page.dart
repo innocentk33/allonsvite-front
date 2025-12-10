@@ -3,25 +3,32 @@ import 'package:allonsvite/core/extension/build_context_ext.dart';
 import 'package:allonsvite/core/themes/app_spacing.dart';
 import 'package:allonsvite/core/widgets/header_with_subtitle.dart';
 import 'package:allonsvite/core/widgets/button_with_loading.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../../core/router/app_router.dart';
+
+import '../../../../core/router/app_routes.dart';
+import '../controllers/auth_controller.dart';
 
 
-class CreateProfilPage extends StatefulWidget {
+
+class CreateProfilPage extends ConsumerStatefulWidget {
   const CreateProfilPage({super.key});
 
   @override
-  State<CreateProfilPage> createState() => _CreateProfilPageState();
+  ConsumerState<CreateProfilPage> createState() => _CreateProfilPageState();
 }
 
-class _CreateProfilPageState extends State<CreateProfilPage> {
+
+
+class _CreateProfilPageState extends ConsumerState<CreateProfilPage> {
   late TextEditingController _firstNameController;
   late TextEditingController _lastNameController;
   late FocusNode _firstNameFocusNode;
   late FocusNode _lastNameFocusNode;
-  String? _errorMessage;
-  bool _isLoading = false;
+
+  // Plus besoin de _isLoading ici, Riverpod s'en charge
+  String? _localError;
 
   @override
   void initState() {
@@ -31,7 +38,6 @@ class _CreateProfilPageState extends State<CreateProfilPage> {
     _firstNameFocusNode = FocusNode();
     _lastNameFocusNode = FocusNode();
 
-    // Auto-focus sur le premier champ
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _firstNameFocusNode.requestFocus();
     });
@@ -46,135 +52,111 @@ class _CreateProfilPageState extends State<CreateProfilPage> {
     super.dispose();
   }
 
-  /// Valide les champs requis
   bool _validateFields() {
     final firstName = _firstNameController.text.trim();
     final lastName = _lastNameController.text.trim();
 
     if (firstName.isEmpty) {
-      setState(() {
-        _errorMessage = 'Le prénom est requis';
-      });
+      setState(() => _localError = 'Le prénom est requis');
       return false;
     }
 
     if (lastName.isEmpty) {
-      setState(() {
-        _errorMessage = 'Le nom est requis';
-      });
+      setState(() => _localError = 'Le nom est requis');
       return false;
     }
 
-    setState(() {
-      _errorMessage = null;
-    });
+    setState(() => _localError = null);
     return true;
   }
 
-  /// Crée le profil
   void _createProfile() {
     if (!_validateFields()) return;
 
-    setState(() {
-      _isLoading = true;
-      _errorMessage = null;
-    });
-
-    // Simulation de la création du profil
-    Future.delayed(const Duration(seconds: 2), () {
-      if (!mounted) return;
-
-      setState(() {
-        _isLoading = false;
-      });
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Bienvenue ${_firstNameController.text} ${_lastNameController.text}!',
-          ),
-          duration: const Duration(seconds: 2),
-        ),
-      );
-
-      // Navigation vers la page de recherche de trajet
-      Future.delayed(const Duration(milliseconds: 500), () {
-        if (mounted) {
-          context.go(AppRoutes.home);
-        }
-      });
-    });
+    // Appel au Controller Riverpod
+    ref.read(authControllerProvider.notifier).createProfile(
+      firstName: _firstNameController.text.trim(),
+      lastName: _lastNameController.text.trim(),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
+    // 1. Écouter l'état global de l'auth
+    final authState = ref.watch(authControllerProvider);
+
+    // 2. Écouter les changements d'état pour agir (Navigation / Erreur)
+    ref.listen(authControllerProvider, (previous, next) {
+      if (next.hasError && !next.isLoading) {
+        // Afficher l'erreur serveur
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(next.error.toString()),
+            backgroundColor: context.colorScheme.error,
+          ),
+        );
+      } else if (next.hasValue && !next.isLoading && !next.hasError) {
+        // SUCCÈS : Navigation vers Home
+        context.go(AppRoutes.home);
+      }
+    });
+
     return Scaffold(
       body: SafeArea(
         child: Column(
           children: [
-            // Contenu scrollable
             Expanded(
               child: SingleChildScrollView(
                 padding: AppSpacings.pL,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // En-tête
                     HeaderWithSubtitle(
-                      title: context.l10n.profile,
+                      title: "Profil", // context.l10n.profile (si tu as l'intl)
                       subtitle: 'Comment doit-on vous appeler ?',
                     ),
                     AppSpacings.gapXL,
-                    // Champs de saisie
+
                     _ProfileInputField(
-                      label: context.l10n.firstName,
+                      label: "Prénom", // context.l10n.firstName
                       controller: _firstNameController,
                       focusNode: _firstNameFocusNode,
                       placeholder: 'ex. Arnaud',
-                      onChanged: (value) {
-                        if (_errorMessage != null) {
-                          setState(() {
-                            _errorMessage = null;
-                          });
-                        }
+                      onChanged: (_) {
+                        if (_localError != null) setState(() => _localError = null);
                       },
-                      onSubmitted: (_) {
-                        _lastNameFocusNode.requestFocus();
-                      },
+                      onSubmitted: (_) => _lastNameFocusNode.requestFocus(),
                     ),
                     AppSpacings.gapL,
+
                     _ProfileInputField(
-                      label: context.l10n.lastName,
+                      label: "Nom", // context.l10n.lastName
                       controller: _lastNameController,
                       focusNode: _lastNameFocusNode,
                       placeholder: 'ex. Bamba',
-                      onChanged: (value) {
-                        if (_errorMessage != null) {
-                          setState(() {
-                            _errorMessage = null;
-                          });
-                        }
+                      onChanged: (_) {
+                        if (_localError != null) setState(() => _localError = null);
                       },
-                      onSubmitted: (_) {
-                        _createProfile();
-                      },
+                      onSubmitted: (_) => _createProfile(),
                     ),
                     AppSpacings.gapL,
-                    // Message d'erreur
-                    if (_errorMessage != null)
-                      _ErrorMessage(message: _errorMessage!)
+
+                    // Affichage des erreurs locales (validation) ou serveur (Riverpod)
+                    if (_localError != null)
+                      _ErrorMessage(message: _localError!)
                     else
                       const SizedBox.shrink(),
                   ],
                 ),
               ),
             ),
-            // Bouton créer mon compte en bas
+
             Padding(
               padding: const EdgeInsets.all(AppSpacings.l),
               child: ButtonWithLoading(
-                isLoading: _isLoading,
-                onPressed: _createProfile,
+                // L'état de chargement vient de Riverpod
+                isLoading: authState.isLoading,
+                onPressed:  _createProfile,
                 buttonText: "C'est parti !",
               ),
             ),
@@ -184,7 +166,6 @@ class _CreateProfilPageState extends State<CreateProfilPage> {
     );
   }
 }
-
 /// Widget stateful pour un champ de profil
 class _ProfileInputField extends StatefulWidget {
   final String label;

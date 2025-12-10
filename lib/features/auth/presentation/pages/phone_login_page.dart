@@ -7,8 +7,9 @@ import 'package:go_router/go_router.dart';
 import 'package:allonsvite/core/themes/app_spacing.dart';
 
 
-import '../../../../core/router/app_router.dart';
-import '../providers/auth_controller.dart';
+
+import '../../../../core/router/app_routes.dart';
+import '../controllers/auth_controller.dart';
 import '../widgets/phone_input_field.dart';
 
 
@@ -121,12 +122,12 @@ class _PhoneLoginPageState extends ConsumerState<PhoneLoginPage> {
     final phone = _phoneController.text.replaceAll(' ', '');
 
     // Appel au provider pour demander l'OTP
-    await ref.read(otpRequestProvider.notifier).requestOtp(phone);
+    await ref.read(authControllerProvider.notifier).requestOtp(phone);
 
     if (!mounted) return;
 
     // Vérifier l'état après la requête
-    final otpState = ref.read(otpRequestProvider);
+    final otpState = ref.read(authControllerProvider);
 
     otpState.when(
       data: (_) {
@@ -164,7 +165,7 @@ class _PhoneLoginPageState extends ConsumerState<PhoneLoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    final otpRequestState = ref.watch(otpRequestProvider);
+    final otpRequestState = ref.watch(authControllerProvider);
     final isLoading = otpRequestState.isLoading;
 
     return Scaffold(

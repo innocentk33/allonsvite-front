@@ -57,7 +57,7 @@ class AuthRemoteRepository {
   }
 
   /// Récupère les informations de l'utilisateur connecté
-  Future<Either<Failure, AuthUser>> getCurrentUser(String token) async {
+  Future<Either<Failure, AuthUser>> getUser(String token) async {
     try {
       final response = await _dio.get(
         AppConstant.user,
@@ -80,10 +80,44 @@ class AuthRemoteRepository {
       return left(Failure('Erreur lors de la récupération des informations: $e'));
     }
   }
+  Future<Either<Failure, Unit>> updateProfile({
+    required String token,
+    required String phone,
+    required String firstName,
+    required String lastName,
+  }) async {
+    try {
+      final response = await _dio.post(
+        AppConstant.userUpdate,
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer $token', // On passe le token
+            'Content-Type': 'application/json',
+          },
+        ),
+        data: {
+          "phone": phone,
+          "firstname": firstName, // Clé JSON exacte selon ta demande
+          "lastname": lastName,   // Clé JSON exacte selon ta demande
+        },
+      );
+      print(response.data);
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        // On suppose que l'API renvoie l'utilisateur mis à jour
+        return right(unit);
+      } else {
+        return left(Failure('Échec de la mise à jour du profil'));
+      }
+    } on DioException catch (e) {
+      return left(_handleDioError(e));
+    } catch (e) {
+      return left(Failure('Erreur inattendue: $e'));
+    }
+  }
   Failure _handleDioError(DioException e) {
     if (e.response != null && e.response?.data != null) {
       final data = e.response?.data;
-      final message = data['message'] ?? 'Erreur inconnue';
+      final message = data['detail'] ?? 'Erreur inconnue ${e.response?.statusCode}';
       return Failure(message);
     } else if (e.type == DioExceptionType.badResponse) {
       return Failure(e.message ?? 'Erreur de connexion');

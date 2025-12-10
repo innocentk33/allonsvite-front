@@ -1,19 +1,26 @@
+import 'package:allonsvite/features/auth/domain/models/auth_user.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:fpdart/fpdart.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../core/exceptions/failure.dart';
 
 class AuthLocalRepository {
   final FlutterSecureStorage _storage;
+  final SharedPreferences _prefs;
   static const _tokenKey = 'auth_token';
   static const _phoneKey = 'phone_number';
+  static const _profileCompletedKey = 'is_profile_completed';
 
-  const AuthLocalRepository(this._storage);
-
+  const AuthLocalRepository(this._storage,this._prefs);
   /// Sauvegarde le token d'authentification
   Future<Either<Failure, Unit>> saveToken(String token) async {
     try {
-      await _storage.write(key: _tokenKey, value: token);
+      await _storage.write(
+        key: _tokenKey,
+        value: token,
+        iOptions: const IOSOptions(accessibility: KeychainAccessibility.first_unlock),
+      );
       return right(unit);
     } catch (e) {
       return left(Failure('Erreur lors de la sauvegarde du token: $e'));
@@ -21,12 +28,14 @@ class AuthLocalRepository {
   }
 
   /// Récupère le token d'authentification
-  Future<Either<Failure, String?>> getToken() async {
+// Récupère le token
+  // Retourne Option<String> : Soit Some(token), soit None (pas de token)
+  Future<Option<String>> getToken() async {
     try {
       final token = await _storage.read(key: _tokenKey);
-      return right(token);
+      return Option.fromNullable(token);
     } catch (e) {
-      return left(Failure('Erreur lors de la récupération du token: $e'));
+      return const Option.none();
     }
   }
 
@@ -69,6 +78,19 @@ class AuthLocalRepository {
     } catch (e) {
       return left(Failure('Erreur lors de la vérification de l\'authentification: $e'));
     }
+  }
+  Future<void> setProfileComplete(bool isComplete) async {
+    await _prefs.setBool(_profileCompletedKey, isComplete);
+  }
+  bool isProfileComplete() {
+    return _prefs.getBool(_profileCompletedKey) ?? false;
+  }
+
+  Future<void> saveUser(AuthUser user) async {
+   // sauvegarde dans SecureStorage
+    await _storage.write(key: 'user_id', value: user.id.toString());
+    await _storage.write(key: 'user_firstname', value: user.firstname);
+    await _storage.write(key: 'user_phone', value: user.phone);
   }
 }
 

@@ -1,3 +1,4 @@
+import 'package:allonsvite/features/auth/data/auth_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:allonsvite/features/auth/presentation/pages/phone_login_page.dart';
@@ -7,64 +8,71 @@ import 'package:allonsvite/features/navigation/home_page.dart';
 import 'package:allonsvite/features/trips/finding_ride.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-import '../../../features/auth/presentation/providers/auth_controller.dart';
-import '../../features/navigation/splash_page.dart';
-part 'app_router.g.dart';
-/// Routes de l'application
-abstract class AppRoutes {
-  static const String phoneLogin = '/phone-login';
-  static const String otpVerification = '/otp-verification';
-  static const String profile = '/profile';
-  static const String home = '/home';
-  static const String splash = '/splash';
-  static const String searchTrip = '/search-trip';
-  static const String findingRide = '/finding-ride';
-  static const String rideDetails = '/ride-details';
-  static const String payment = '/payment';
-  static const String tripHistory = '/trip-history';
-  static const String tripDetails = '/trip-details';
-  static const String notifications = '/notifications';
-  static const String settings = '/settings';
-  static const String aboutUs = '/about-us';
-  static const String contactUs = '/contact-us';
-  static const String privacyPolicy = '/privacy-policy';
-  static const String termsAndConditions = '/terms-and-conditions';
-  static const String helpAndSupport = '/help-and-support';
-  static const String language = '/language';
-}
 
+import '../../features/navigation/splash_page.dart';
+import 'app_routes.dart';
+part 'app_router.g.dart';
 /// Provider pour GoRouter
 /// Dépend de l'état d'authentification pour rediriger correctement
 @riverpod
 GoRouter appRouter(Ref ref) {
   // Watch l'état d'authentification
-  final authCheck = ref.watch(authCheckProvider);
+  final authRepo = ref.watch(authRepositoryProvider);
 
   return GoRouter(
-    initialLocation: AppRoutes.splash,
+    initialLocation: AppRoutes.home,
     debugLogDiagnostics: true,
-    redirect: (context, state) {
-      // Vérifier si on est en train de charger l'authentification
-      if (authCheck.isLoading) {
-        return AppRoutes.splash;
-      }
+    redirect: (context, state) async{
+// 1. Récupération des données asynchrones
+      // Est-ce que j'ai un token ?
+      final tokenOption = await authRepo.checkAuthStatus();
+      final isLoggedIn = tokenOption.isSome();
 
-      final isAuthenticated = authCheck.whenData((value) => value).value ?? false;
-      final isLoggingIn = state.matchedLocation == AppRoutes.phoneLogin ||
-          state.matchedLocation == AppRoutes.otpVerification ||
-          state.matchedLocation == AppRoutes.splash;
+      // Est-ce que mon profil est complété ? (Tu dois implémenter cette méthode dans ton repo)
+      // Par défaut false si pas connecté
+      final bool isProfileComplete = isLoggedIn
+          ? await authRepo.checkProfileCompletion()
+          : false;
 
-      // Si pas authentifié et pas en train de se connecter → login
-      if (!isAuthenticated && !isLoggingIn) {
+      // 2. Analyse de la route actuelle
+      final String location = state.uri.toString();
+
+      final bool isLoggingIn = location == AppRoutes.phoneLogin;
+      final bool isVerifyingOtp = location == AppRoutes.otpVerification;
+      final bool isCreatingProfile = location == AppRoutes.createProfile;
+      final bool isSplash = location == AppRoutes.splash;
+
+      // --- LOGIQUE DE REDIRECTION ---
+
+      // CAS A : PAS CONNECTÉ (Pas de token)
+      if (!isLoggedIn) {
+        // On autorise l'accès au Login, OTP et Splash sans redirection
+        if (isLoggingIn || isVerifyingOtp || isSplash) {
+          return null;
+        }
+        // Sinon, on renvoie au Login
         return AppRoutes.phoneLogin;
       }
 
-      // Si authentifié et en train de se connecter → home
-      if (isAuthenticated && isLoggingIn) {
+      // CAS B : CONNECTÉ MAIS PROFIL INCOMPLET (Token OK, mais pas de Nom/Prénom)
+      // C'est ici que se joue ta demande
+      if (isLoggedIn && !isProfileComplete) {
+        // Si l'utilisateur est déjà sur la page de création, on le laisse tranquille
+        if (isCreatingProfile) {
+          return null;
+        }
+        // Sinon, on le force à aller sur la création de profil
+        return AppRoutes.createProfile;
+      }
+
+      // CAS C : CONNECTÉ ET PROFIL COMPLET (Utilisateur normal)
+      // S'il essaie de retourner sur Login, OTP ou Création de profil -> On le renvoie à Home
+      if (isLoggingIn || isVerifyingOtp || isCreatingProfile || isSplash) {
         return AppRoutes.home;
       }
 
-      return null; // Pas de redirection
+      // CAS D : Tout est OK, pas de redirection nécessaire
+      return null;
     },
     routes: [
       // Route Splash
@@ -88,9 +96,9 @@ GoRouter appRouter(Ref ref) {
         },
       ),
 
-      // Route Profil - Création/Modification du profil
+      // Route Profil - Création
       GoRoute(
-        path: AppRoutes.profile,
+        path: AppRoutes.createProfile,
         builder: (context, state) => const CreateProfilPage(),
       ),
 

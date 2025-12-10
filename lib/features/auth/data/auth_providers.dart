@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../core/constant/app_constant.dart';
 import 'auth_local_repository.dart';
@@ -8,7 +9,10 @@ import 'auth_remote_repository.dart';
 import 'auth_repository.dart';
 
 part 'auth_providers.g.dart';
-
+@Riverpod(keepAlive: true)
+SharedPreferences sharedPreferences(Ref ref) {
+  throw UnimplementedError('SharedPreferences doit être initialisé dans le main');
+}
 /// Fonction factory pour créer une instance Dio configurée
 Dio _createAuthDio() {
   return Dio(
@@ -27,7 +31,8 @@ Dio _createAuthDio() {
 /// Provider pour AuthLocalRepository
 @riverpod
 AuthLocalRepository authLocalRepository(Ref ref) {
-  return AuthLocalRepository(const FlutterSecureStorage());
+  final prefs = ref.watch(sharedPreferencesProvider);
+  return AuthLocalRepository(const FlutterSecureStorage(),prefs);
 }
 
 /// Provider pour AuthRemoteRepository

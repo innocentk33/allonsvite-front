@@ -7,8 +7,10 @@ import 'package:allonsvite/core/widgets/header_with_subtitle.dart';
 import 'package:allonsvite/core/widgets/button_with_loading.dart';
 
 
-import '../../../../core/router/app_router.dart';
-import '../providers/auth_controller.dart';
+
+import '../../../../core/router/app_routes.dart';
+import '../controllers/auth_controller.dart';
+
 
 
 class OtpVerificationPage extends ConsumerStatefulWidget {
@@ -133,7 +135,7 @@ class _OtpVerificationPageState extends ConsumerState<OtpVerificationPage> {
     });
 
     // Appel au provider pour vérifier l'OTP
-    await ref.read(otpVerificationProvider.notifier).verifyOtp(
+    await ref.read(authControllerProvider.notifier).verifyOtp(
       widget.phoneNumber,
       otpCode,
     );
@@ -141,7 +143,7 @@ class _OtpVerificationPageState extends ConsumerState<OtpVerificationPage> {
     if (!mounted) return;
 
     // Vérifier l'état après la vérification
-    final verificationState = ref.read(otpVerificationProvider);
+    final verificationState = ref.read(authControllerProvider);
 
     verificationState.when(
       data: (_) {
@@ -183,12 +185,12 @@ class _OtpVerificationPageState extends ConsumerState<OtpVerificationPage> {
     });
 
     // Appel au provider pour renvoyer l'OTP
-    await ref.read(otpRequestProvider.notifier).requestOtp(widget.phoneNumber);
+    await ref.read(authControllerProvider.notifier).requestOtp(widget.phoneNumber);
 
     if (!mounted) return;
 
     // Vérifier l'état après la requête
-    final otpState = ref.read(otpRequestProvider);
+    final otpState = ref.read(authControllerProvider);
 
     otpState.when(
       data: (_) {
@@ -220,7 +222,7 @@ class _OtpVerificationPageState extends ConsumerState<OtpVerificationPage> {
 
   @override
   Widget build(BuildContext context) {
-    final verificationState = ref.watch(otpVerificationProvider);
+    final verificationState = ref.watch(authControllerProvider);
     final isLoading = verificationState.isLoading;
 
     return PopScope(

@@ -45,6 +45,10 @@ class AuthUser {
     };
   }
 
+  bool get isProfileCompleted {
+    return firstname.isNotEmpty && lastname.isNotEmpty;
+  }
+
   // copyWith method
   AuthUser copyWith({
     int? id,
