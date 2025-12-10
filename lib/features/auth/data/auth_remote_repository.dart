@@ -11,7 +11,7 @@ class AuthRemoteRepository {
 
   const AuthRemoteRepository(this._dio);
 
-  /// Demande un code OTP pour le numéro de téléphone
+  // Demande un code OTP pour le numéro de téléphone
   Future<Either<Failure, Unit>> requestOtp(String phoneNumber) async {
     try {
       final response = await _dio.post(
@@ -33,7 +33,7 @@ class AuthRemoteRepository {
     }
   }
 
-  /// Vérifie le code OTP et retourne l'utilisateur authentifié avec le token
+  // Vérifie le code OTP et retourne l'utilisateur authentifié avec le token
   Future<Either<Failure, AuthResponse>> verifyOtp(String phoneNumber, String otpCode) async {
     try {
       final response = await _dio.post(
@@ -56,7 +56,7 @@ class AuthRemoteRepository {
     }
   }
 
-  /// Récupère les informations de l'utilisateur connecté
+  // Récupère les informations de l'utilisateur connecté
   Future<Either<Failure, AuthUser>> getUser(String token) async {
     try {
       final response = await _dio.get(
@@ -70,6 +70,9 @@ class AuthRemoteRepository {
 
       if (response.statusCode == 200) {
         final data = response.data;
+        print('Info recuprérées: $data');
+        final AuthUser user = AuthUser.fromJson(data);
+        print('User créé: $user');
         return right(AuthUser.fromJson(data));
       } else {
         return left(Failure('Erreur lors de la récupération des informations'));
@@ -91,19 +94,17 @@ class AuthRemoteRepository {
         AppConstant.userUpdate,
         options: Options(
           headers: {
-            'Authorization': 'Bearer $token', // On passe le token
+            'Authorization': 'Bearer $token',
             'Content-Type': 'application/json',
           },
         ),
         data: {
           "phone": phone,
-          "firstname": firstName, // Clé JSON exacte selon ta demande
-          "lastname": lastName,   // Clé JSON exacte selon ta demande
+          "firstname": firstName,
+          "lastname": lastName,
         },
       );
-      print(response.data);
       if (response.statusCode == 200 || response.statusCode == 201) {
-        // On suppose que l'API renvoie l'utilisateur mis à jour
         return right(unit);
       } else {
         return left(Failure('Échec de la mise à jour du profil'));

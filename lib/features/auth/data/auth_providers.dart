@@ -13,7 +13,7 @@ part 'auth_providers.g.dart';
 SharedPreferences sharedPreferences(Ref ref) {
   throw UnimplementedError('SharedPreferences doit être initialisé dans le main');
 }
-/// Fonction factory pour créer une instance Dio configurée
+// Fonction factory pour créer une instance Dio configurée
 Dio _createAuthDio() {
   return Dio(
     BaseOptions(
@@ -28,20 +28,20 @@ Dio _createAuthDio() {
   );
 }
 
-/// Provider pour AuthLocalRepository
+// Provider pour AuthLocalRepository
 @riverpod
 AuthLocalRepository authLocalRepository(Ref ref) {
   final prefs = ref.watch(sharedPreferencesProvider);
   return AuthLocalRepository(const FlutterSecureStorage(),prefs);
 }
 
-/// Provider pour AuthRemoteRepository
+// Provider pour AuthRemoteRepository
 @riverpod
 AuthRemoteRepository authRemoteRepository(Ref ref) {
   return AuthRemoteRepository(_createAuthDio());
 }
 
-/// Provider pour AuthRepository (l'orchestrateur)
+// Provider pour AuthRepository (l'orchestrateur)
 @riverpod
 AuthRepository authRepository(Ref ref) {
   final localRepository = ref.watch(authLocalRepositoryProvider);

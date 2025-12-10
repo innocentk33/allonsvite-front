@@ -58,6 +58,52 @@ class AppTheme {
           ),
         ),
       ),
+      inputDecorationTheme: InputDecorationTheme(
+        filled: true,
+        fillColor: AppColors.lightScheme.secondaryContainer,
+        hintStyle: AppTypography.textTheme.bodyLarge?.copyWith(
+          color: AppColors.lightScheme.onSurfaceVariant.withValues(alpha: 0.5),
+        ),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: AppSpacings.m,
+          vertical: AppSpacings.m,
+        ),
+        border: OutlineInputBorder(
+          borderRadius: AppSpacings.brMs,
+          borderSide: BorderSide(
+            color: AppColors.lightScheme.outline,
+            width: 1,
+          ),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: AppSpacings.brMs,
+          borderSide: BorderSide(
+            color: AppColors.lightScheme.outline,
+            width: 1,
+          ),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: AppSpacings.brMs,
+          borderSide: BorderSide(
+            color: AppColors.lightScheme.primary,
+            width: 2,
+          ),
+        ),
+        errorBorder: OutlineInputBorder(
+          borderRadius: AppSpacings.brMs,
+          borderSide: BorderSide(
+            color: AppColors.lightScheme.error,
+            width: 1.5,
+          ),
+        ),
+        focusedErrorBorder: OutlineInputBorder(
+          borderRadius: AppSpacings.brMs,
+          borderSide: BorderSide(
+            color: AppColors.lightScheme.error,
+            width: 2,
+          ),
+        ),
+      ),
 
       // AppBar
       appBarTheme: AppBarTheme(

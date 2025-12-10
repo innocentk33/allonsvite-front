@@ -13,7 +13,6 @@ class AuthLocalRepository {
   static const _profileCompletedKey = 'is_profile_completed';
 
   const AuthLocalRepository(this._storage,this._prefs);
-  /// Sauvegarde le token d'authentification
   Future<Either<Failure, Unit>> saveToken(String token) async {
     try {
       await _storage.write(
@@ -28,7 +27,6 @@ class AuthLocalRepository {
   }
 
   /// Récupère le token d'authentification
-// Récupère le token
   // Retourne Option<String> : Soit Some(token), soit None (pas de token)
   Future<Option<String>> getToken() async {
     try {
@@ -39,7 +37,7 @@ class AuthLocalRepository {
     }
   }
 
-  /// Sauvegarde le numéro de téléphone
+  // Sauvegarde le numéro de téléphone
   Future<Either<Failure, Unit>> savePhone(String phone) async {
     try {
       await _storage.write(key: _phoneKey, value: phone);
@@ -70,7 +68,7 @@ class AuthLocalRepository {
     }
   }
 
-  /// Vérifie si l'utilisateur est authentifié
+  // Vérifie si l'utilisateur est authentifié
   Future<Either<Failure, bool>> isAuthenticated() async {
     try {
       final token = await _storage.read(key: _tokenKey);
@@ -87,7 +85,6 @@ class AuthLocalRepository {
   }
 
   Future<void> saveUser(AuthUser user) async {
-   // sauvegarde dans SecureStorage
     await _storage.write(key: 'user_id', value: user.id.toString());
     await _storage.write(key: 'user_firstname', value: user.firstname);
     await _storage.write(key: 'user_phone', value: user.phone);

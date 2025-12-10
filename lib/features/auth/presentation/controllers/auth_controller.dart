@@ -1,8 +1,7 @@
-import 'package:flutter/cupertino.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../data/auth_providers.dart';
-import '../../domain/models/auth_user.dart';
+
 
 part 'auth_controller.g.dart';
 
@@ -15,7 +14,7 @@ class AuthController extends _$AuthController {
     return null;
   }
 
-  /// Méthode pour demander l'OTP (Step 1)
+  // Méthode pour demander l'OTP (Step 1)
   Future<void> requestOtp(String phone) async {
     state = const AsyncLoading(); // 1. On affiche le loader
 
@@ -28,17 +27,14 @@ class AuthController extends _$AuthController {
     );
   }
 
-  /// Méthode pour vérifier l'OTP et se connecter (Step 2)
-  /// C'est celle que tu as demandée
+  // Méthode pour vérifier l'OTP et se connecter (Step 2)
   Future<void> verifyOtp(String phone, String code) async {
-    // 1. Validation défensive (Optionnel mais recommandé)
-    if (code.length < 4) {
-      state = AsyncError("Le code doit contenir 4 chiffres", StackTrace.current);
+    // 1. Validation
+    if (code.length < 6) {
+      state = AsyncError("Le code doit contenir 6 chiffres", StackTrace.current);
       return;
     }
-
     // 2. Passage de l'état à "Chargement"
-    // L'UI va afficher un CircularProgressIndicator et désactiver le bouton
     state = const AsyncLoading();
 
     // 3. Appel au Repository
@@ -48,18 +44,15 @@ class AuthController extends _$AuthController {
     final result = await repo.verifyOtpAndLogin(phone, code);
 
     // 4. Traitement du résultat avec fpdart (.fold)
-    // .fold(fonctionSiGauche, fonctionSiDroite)
     result.fold(
           (failure) {
-        // GAUCHE (Left) : C'est une AuthFailure (Erreur réseau, code faux, etc.)
-        // On met l'état en erreur pour que l'UI affiche une SnackBar rouge.
         state = AsyncError(failure.message, StackTrace.current);
       },
           (success) {
         // DROITE (Right) : C'est un Unit (Succès)
         // Le token est déjà sauvegardé dans le SecureStorage par le Repo.
         // On met l'état en succès.
-        // L'UI (via ref.listen) détectera ce changement et naviguera vers le Dashboard.
+        // L'UI (via ref.listen) détectera ce changement et naviguera vers le Home.
         state = const AsyncData(null);
       },
     );

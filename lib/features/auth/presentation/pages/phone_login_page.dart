@@ -1,5 +1,6 @@
 import 'package:allonsvite/core/extension/build_context_ext.dart';
 import 'package:allonsvite/core/widgets/button_with_loading.dart';
+import 'package:allonsvite/core/widgets/country_flag.dart';
 import 'package:allonsvite/core/widgets/header_with_subtitle.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -9,8 +10,9 @@ import 'package:allonsvite/core/themes/app_spacing.dart';
 
 
 import '../../../../core/router/app_routes.dart';
+import '../../../../core/widgets/phone_input_field.dart';
 import '../controllers/auth_controller.dart';
-import '../widgets/phone_input_field.dart';
+
 
 
 class PhoneLoginPage extends ConsumerStatefulWidget {
@@ -183,17 +185,25 @@ class _PhoneLoginPageState extends ConsumerState<PhoneLoginPage> {
                     HeaderWithSubtitle(title: context.l10n.phoneLoginTitle,subtitle: context.l10n.phoneLoginSubtitle,),
                     AppSpacings.gapL,
                     // Champ téléphone avec drapeau
-                    PhoneInputField(
-                      controller: _phoneController,
-                      focusNode: _phoneFocusNode,
-                      errorMessage: _errorMessage,
-                      onChanged: (value) {
-                        if (_errorMessage != null) {
-                          setState(() {
-                            _errorMessage = null;
-                          });
-                        }
-                      },
+                    Row(
+                      children: [
+                        CountryFlag(),
+                        AppSpacings.gapS,
+                        Expanded(
+                          child: PhoneInputField(
+                            controller: _phoneController,
+                            focusNode: _phoneFocusNode,
+                            errorMessage: _errorMessage,
+                            onChanged: (value) {
+                              if (_errorMessage != null) {
+                                setState(() {
+                                  _errorMessage = null;
+                                });
+                              }
+                            },
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),

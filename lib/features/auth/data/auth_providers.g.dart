@@ -56,12 +56,8 @@ final class SharedPreferencesProvider
 
 String _$sharedPreferencesHash() => r'e74b8add9e3612bacbe713cb817c434906039a54';
 
-/// Provider pour AuthLocalRepository
-
 @ProviderFor(authLocalRepository)
 const authLocalRepositoryProvider = AuthLocalRepositoryProvider._();
-
-/// Provider pour AuthLocalRepository
 
 final class AuthLocalRepositoryProvider
     extends
@@ -71,7 +67,6 @@ final class AuthLocalRepositoryProvider
           AuthLocalRepository
         >
     with $Provider<AuthLocalRepository> {
-  /// Provider pour AuthLocalRepository
   const AuthLocalRepositoryProvider._()
     : super(
         from: null,
@@ -109,12 +104,8 @@ final class AuthLocalRepositoryProvider
 String _$authLocalRepositoryHash() =>
     r'5e1ef93eb03a9014473ff9af3b418a61c0f441d4';
 
-/// Provider pour AuthRemoteRepository
-
 @ProviderFor(authRemoteRepository)
 const authRemoteRepositoryProvider = AuthRemoteRepositoryProvider._();
-
-/// Provider pour AuthRemoteRepository
 
 final class AuthRemoteRepositoryProvider
     extends
@@ -124,7 +115,6 @@ final class AuthRemoteRepositoryProvider
           AuthRemoteRepository
         >
     with $Provider<AuthRemoteRepository> {
-  /// Provider pour AuthRemoteRepository
   const AuthRemoteRepositoryProvider._()
     : super(
         from: null,
@@ -162,17 +152,12 @@ final class AuthRemoteRepositoryProvider
 String _$authRemoteRepositoryHash() =>
     r'93a60d68a9dc12754e90eb63bcfe767a9ef3a45e';
 
-/// Provider pour AuthRepository (l'orchestrateur)
-
 @ProviderFor(authRepository)
 const authRepositoryProvider = AuthRepositoryProvider._();
-
-/// Provider pour AuthRepository (l'orchestrateur)
 
 final class AuthRepositoryProvider
     extends $FunctionalProvider<AuthRepository, AuthRepository, AuthRepository>
     with $Provider<AuthRepository> {
-  /// Provider pour AuthRepository (l'orchestrateur)
   const AuthRepositoryProvider._()
     : super(
         from: null,

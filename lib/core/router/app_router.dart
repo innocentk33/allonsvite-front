@@ -12,8 +12,8 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../features/navigation/splash_page.dart';
 import 'app_routes.dart';
 part 'app_router.g.dart';
-/// Provider pour GoRouter
-/// Dépend de l'état d'authentification pour rediriger correctement
+// Provider pour GoRouter
+// Dépend de l'état d'authentification pour rediriger correctement
 @riverpod
 GoRouter appRouter(Ref ref) {
   // Watch l'état d'authentification
@@ -55,7 +55,6 @@ GoRouter appRouter(Ref ref) {
       }
 
       // CAS B : CONNECTÉ MAIS PROFIL INCOMPLET (Token OK, mais pas de Nom/Prénom)
-      // C'est ici que se joue ta demande
       if (isLoggedIn && !isProfileComplete) {
         // Si l'utilisateur est déjà sur la page de création, on le laisse tranquille
         if (isCreatingProfile) {
@@ -91,7 +90,7 @@ GoRouter appRouter(Ref ref) {
       GoRoute(
         path: AppRoutes.otpVerification,
         builder: (context, state) {
-          final phoneNumber = state.extra as String? ?? '+225 XX XX XX XX';
+          final phoneNumber = state.extra as String? ?? '07 XX XX XX XX';
           return OtpVerificationPage(phoneNumber: phoneNumber);
         },
       ),

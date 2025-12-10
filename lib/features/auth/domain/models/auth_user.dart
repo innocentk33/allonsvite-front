@@ -1,22 +1,18 @@
 class AuthUser {
   final int id;
-  final String username;
+  final String? username;
   final String phone;
-  final List<String> roles;
-  final String password;
-  final String firstname;
-  final String lastname;
-  final String userIdentifier;
+  final String? password;
+  final String? firstname;
+  final String? lastname;
 
   AuthUser({
     required this.id,
     required this.username,
     required this.phone,
-    required this.roles,
     required this.password,
     required this.firstname,
     required this.lastname,
-    required this.userIdentifier,
   });
 
   factory AuthUser.fromJson(Map<String, dynamic> json) {
@@ -24,11 +20,9 @@ class AuthUser {
       id: json['id'],
       username: json['username'],
       phone: json['phone'],
-      roles: List<String>.from(json['roles']),
       password: json['password'],
       firstname: json['firstname'],
       lastname: json['lastname'],
-      userIdentifier: json['userIdentifier'],
     );
   }
 
@@ -37,16 +31,15 @@ class AuthUser {
       'id': id,
       'username': username,
       'phone': phone,
-      'roles': roles,
       'password': password,
       'firstname': firstname,
       'lastname': lastname,
-      'userIdentifier': userIdentifier,
     };
   }
 
   bool get isProfileCompleted {
-    return firstname.isNotEmpty && lastname.isNotEmpty;
+    return (firstname != null && firstname!.isNotEmpty) &&
+        (lastname != null && lastname!.isNotEmpty);
   }
 
   // copyWith method
@@ -64,11 +57,9 @@ class AuthUser {
       id: id ?? this.id,
       username: username ?? this.username,
       phone: phone ?? this.phone,
-      roles: roles ?? this.roles,
       password: password ?? this.password,
       firstname: firstname ?? this.firstname,
       lastname: lastname ?? this.lastname,
-      userIdentifier: userIdentifier ?? this.userIdentifier,
     );
   }
 
@@ -77,11 +68,9 @@ class AuthUser {
     id,
     username,
     phone,
-    roles,
     password,
     firstname,
     lastname,
-    userIdentifier,
   );
 
   @override
@@ -91,10 +80,8 @@ class AuthUser {
             other.id == id &&
             other.username == username &&
             other.phone == phone &&
-            other.roles == roles &&
             other.password == password &&
             other.firstname == firstname &&
-            other.lastname == lastname &&
-            other.userIdentifier == userIdentifier);
+            other.lastname == lastname);
   }
 }

@@ -102,6 +102,16 @@ class _CreateProfilPageState extends ConsumerState<CreateProfilPage> {
     });
 
     return Scaffold(
+      appBar: AppBar(
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            onPressed: () async{
+              await ref.read(authControllerProvider.notifier).verifyOtp('0748951104', '810178');
+            },
+          ),
+        ],
+      ),
       body: SafeArea(
         child: Column(
           children: [
