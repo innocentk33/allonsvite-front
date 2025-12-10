@@ -1,13 +1,18 @@
 import 'package:allonsvite/core/router/app_router.dart';
+import 'package:allonsvite/features/auth/data/auth_providers.dart';
 import 'package:allonsvite/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'core/themes/app_theme.dart';
 
-
-void main() {
-  runApp(const ProviderScope(child: MyApp()));
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  final pref = await SharedPreferences.getInstance();
+  runApp(ProviderScope(overrides: [
+    sharedPreferencesProvider.overrideWithValue(pref)
+  ], child: const MyApp()));
 }
 
 class MyApp extends ConsumerWidget {

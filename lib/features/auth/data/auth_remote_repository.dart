@@ -11,7 +11,7 @@ class AuthRemoteRepository {
 
   const AuthRemoteRepository(this._dio);
 
-  /// Demande un code OTP pour le numéro de téléphone
+  // Demande un code OTP pour le numéro de téléphone
   Future<Either<Failure, Unit>> requestOtp(String phoneNumber) async {
     try {
       final response = await _dio.post(
@@ -33,7 +33,7 @@ class AuthRemoteRepository {
     }
   }
 
-  /// Vérifie le code OTP et retourne l'utilisateur authentifié avec le token
+  // Vérifie le code OTP et retourne l'utilisateur authentifié avec le token
   Future<Either<Failure, AuthResponse>> verifyOtp(String phoneNumber, String otpCode) async {
     try {
       final response = await _dio.post(
@@ -56,8 +56,8 @@ class AuthRemoteRepository {
     }
   }
 
-  /// Récupère les informations de l'utilisateur connecté
-  Future<Either<Failure, AuthUser>> getCurrentUser(String token) async {
+  // Récupère les informations de l'utilisateur connecté
+  Future<Either<Failure, AuthUser>> getUser(String token) async {
     try {
       final response = await _dio.get(
         AppConstant.user,
@@ -70,6 +70,9 @@ class AuthRemoteRepository {
 
       if (response.statusCode == 200) {
         final data = response.data;
+        print('Info recuprérées: $data');
+        final AuthUser user = AuthUser.fromJson(data);
+        print('User créé: $user');
         return right(AuthUser.fromJson(data));
       } else {
         return left(Failure('Erreur lors de la récupération des informations'));
@@ -80,10 +83,42 @@ class AuthRemoteRepository {
       return left(Failure('Erreur lors de la récupération des informations: $e'));
     }
   }
+  Future<Either<Failure, Unit>> updateProfile({
+    required String token,
+    required String phone,
+    required String firstName,
+    required String lastName,
+  }) async {
+    try {
+      final response = await _dio.post(
+        AppConstant.userUpdate,
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer $token',
+            'Content-Type': 'application/json',
+          },
+        ),
+        data: {
+          "phone": phone,
+          "firstname": firstName,
+          "lastname": lastName,
+        },
+      );
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return right(unit);
+      } else {
+        return left(Failure('Échec de la mise à jour du profil'));
+      }
+    } on DioException catch (e) {
+      return left(_handleDioError(e));
+    } catch (e) {
+      return left(Failure('Erreur inattendue: $e'));
+    }
+  }
   Failure _handleDioError(DioException e) {
     if (e.response != null && e.response?.data != null) {
       final data = e.response?.data;
-      final message = data['message'] ?? 'Erreur inconnue';
+      final message = data['detail'] ?? 'Erreur inconnue ${e.response?.statusCode}';
       return Failure(message);
     } else if (e.type == DioExceptionType.badResponse) {
       return Failure(e.message ?? 'Erreur de connexion');
