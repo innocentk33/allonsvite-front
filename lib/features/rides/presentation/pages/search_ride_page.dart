@@ -1,8 +1,10 @@
+import 'package:allonsvite/core/router/app_routes.dart';
+import 'package:allonsvite/features/rides/domain/location.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../core/extension/build_context_ext.dart';
 import '../../../../core/themes/app_spacing.dart';
-import 'location_search_page.dart';
 
 class SearchRidePage extends StatefulWidget {
   const SearchRidePage({super.key});
@@ -41,25 +43,19 @@ class _SearchRidePageState extends State<SearchRidePage> {
 
   Future<void> _selectFromLocation() async {
     debugPrint('_selectFromLocation() called');
-    final location = await Navigator.push(
-      context,
-      MaterialPageRoute(builder: (_) => const LocationSearchPage()),
-    );
+    final location = await context.push<Location>(AppRoutes.findLocation);
     if (location != null) {
       setState(() {
-        _fromController.text = location;
+        _fromController.text = location.name;
       });
     }
   }
 
   Future<void> _selectToLocation() async {
-    final location = await Navigator.push(
-      context,
-      MaterialPageRoute(builder: (_) => const LocationSearchPage()),
-    );
+    final location = await context.push<Location>(AppRoutes.findLocation);
     if (location != null) {
       setState(() {
-        _toController.text = location;
+        _toController.text = location.name;
       });
     }
   }
@@ -115,9 +111,7 @@ class _SearchRidePageState extends State<SearchRidePage> {
     showDialog(
       context: context,
       builder: (context) => Dialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         child: StatefulBuilder(
           builder: (context, setState) => Container(
             decoration: BoxDecoration(
@@ -154,10 +148,7 @@ class _SearchRidePageState extends State<SearchRidePage> {
                           ),
                           padding: EdgeInsets.zero,
                         ),
-                        child: const Text(
-                          '−',
-                          style: TextStyle(fontSize: 24),
-                        ),
+                        child: const Text('−', style: TextStyle(fontSize: 24)),
                       ),
                     ),
                     AppSpacings.gapXL,
@@ -183,10 +174,7 @@ class _SearchRidePageState extends State<SearchRidePage> {
                           ),
                           padding: EdgeInsets.zero,
                         ),
-                        child: const Text(
-                          '+',
-                          style: TextStyle(fontSize: 24),
-                        ),
+                        child: const Text('+', style: TextStyle(fontSize: 24)),
                       ),
                     ),
                   ],
@@ -239,7 +227,7 @@ class _SearchRidePageState extends State<SearchRidePage> {
                     AppSpacings.gapL,
                     // Titre avec nom de l'utilisateur
                     Text(
-                      'Hi, Naomi',
+                      'Bonjour',
                       style: context.textTheme.headlineLarge?.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
@@ -252,109 +240,90 @@ class _SearchRidePageState extends State<SearchRidePage> {
                       ),
                     ),
                     AppSpacings.gapXL,
-                    // Carte de recherche avec illustration en arrière-plan
-                    Stack(
-                      children: [
-                        // Illustration de route décorative
-                        Positioned(
-                          bottom: 0,
-                          left: 0,
-                          right: 0,
-                          child: CustomPaint(
-                            size: const Size(double.infinity, 150),
-                            painter: _RoadPainter(),
+                    // Carte de recherche
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(20),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.08),
+                            blurRadius: 20,
+                            offset: const Offset(0, 4),
                           ),
-                        ),
-                        // Carte de recherche
-                        Container(
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(20),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withValues(alpha: 0.08),
-                                blurRadius: 20,
-                                offset: const Offset(0, 4),
-                              ),
-                            ],
-                          ),
-                          padding: AppSpacings.pL,
-                          child: Column(
+                        ],
+                      ),
+                      padding: AppSpacings.pL,
+                      child: Column(
+                        children: [
+                          // Champ From avec icône swap
+                          Row(
                             children: [
-                              // Champ From avec icône swap
-                              Row(
-                                children: [
-                                  Expanded(
-                                    child: GestureDetector(
-                                      onTap: _selectFromLocation,
-                                      child: _SearchTextField(
-                                        controller: _fromController,
-                                        placeholder: 'From',
-                                        readOnly: true,
-                                      ),
-                                    ),
-                                  ),
-                                  AppSpacings.gapS,
-                                  IconButton(
-                                    onPressed: _swapLocations,
-                                    icon: Icon(
-                                      LucideIcons.arrowUpDown,
-                                      color: context.colorScheme.onSurfaceVariant,
-                                      size: 20,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              // Séparateur
-                              const Divider(height: 1),
-                              AppSpacings.gapM,
-                              // Champ To
-                              GestureDetector(
-                                onTap: _selectToLocation,
+                              Expanded(
                                 child: _SearchTextField(
-                                  controller: _toController,
-                                  placeholder: 'To',
+                                  onTap: _selectFromLocation,
+                                  controller: _fromController,
+                                  placeholder: 'From de ouf',
                                   readOnly: true,
                                 ),
                               ),
-                              AppSpacings.gapM,
-                              // Séparateur
-                              const Divider(height: 1),
-                              AppSpacings.gapM,
-                              // Date - cliquable
-                              GestureDetector(
-                                onTap: _selectDate,
-                                child: _InfoRow(
-                                  icon: LucideIcons.calendar,
-                                  label: _formatDate(_selectedDate),
-                                ),
-                              ),
-                              AppSpacings.gapM,
-                              // Séparateur
-                              const Divider(height: 1),
-                              AppSpacings.gapM,
-                              // Nombre de personnes - cliquable
-                              GestureDetector(
-                                onTap: _showPeopleDialog,
-                                child: Row(
-                                  children: [
-                                    Icon(
-                                      LucideIcons.users,
-                                      size: 18,
-                                      color: context.colorScheme.onSurfaceVariant,
-                                    ),
-                                    AppSpacings.gapS,
-                                    Text(
-                                      '$_numberOfPeople ${_numberOfPeople == 1 ? 'personne' : 'personnes'}',
-                                      style: context.textTheme.bodyMedium,
-                                    ),
-                                  ],
+                              AppSpacings.gapS,
+                              IconButton(
+                                onPressed: _swapLocations,
+                                icon: Icon(
+                                  LucideIcons.arrowUpDown,
+                                  color: context.colorScheme.onSurfaceVariant,
+                                  size: 20,
                                 ),
                               ),
                             ],
                           ),
-                        ),
-                      ],
+                          // Séparateur
+                          const Divider(height: 1),
+                          AppSpacings.gapM,
+                          // Champ To
+                          _SearchTextField(
+                            onTap: _selectToLocation,
+                            controller: _toController,
+                            placeholder: 'To',
+                            readOnly: true,
+                          ),
+                          AppSpacings.gapM,
+                          // Séparateur
+                          const Divider(height: 1),
+                          AppSpacings.gapM,
+                          // Date - cliquable
+                          GestureDetector(
+                            onTap: _selectDate,
+                            child: _InfoRow(
+                              icon: LucideIcons.calendar,
+                              label: _formatDate(_selectedDate),
+                            ),
+                          ),
+                          AppSpacings.gapM,
+                          // Séparateur
+                          const Divider(height: 1),
+                          AppSpacings.gapM,
+                          // Nombre de personnes - cliquable
+                          GestureDetector(
+                            onTap: _showPeopleDialog,
+                            child: Row(
+                              children: [
+                                Icon(
+                                  LucideIcons.users,
+                                  size: 18,
+                                  color: context.colorScheme.onSurfaceVariant,
+                                ),
+                                AppSpacings.gapS,
+                                Text(
+                                  '$_numberOfPeople ${_numberOfPeople == 1 ? 'personne' : 'personnes'}',
+                                  style: context.textTheme.bodyMedium,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ],
                 ),
@@ -378,9 +347,7 @@ class _SearchRidePageState extends State<SearchRidePage> {
                   ),
                   child: Text(
                     'Find a Ride',
-                    style: context.textTheme.labelLarge?.copyWith(
-                      fontSize: 16,
-                    ),
+                    style: context.textTheme.labelLarge?.copyWith(fontSize: 16),
                   ),
                 ),
               ),
@@ -398,16 +365,19 @@ class _SearchTextField extends StatelessWidget {
   final TextEditingController controller;
   final String placeholder;
   final bool readOnly;
+  final GestureTapCallback? onTap;
 
   const _SearchTextField({
     required this.controller,
     required this.placeholder,
     this.readOnly = false,
+    this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
     return TextField(
+      onTap: onTap,
       controller: controller,
       readOnly: readOnly,
       decoration: InputDecoration(
@@ -430,109 +400,16 @@ class _InfoRow extends StatelessWidget {
   final IconData icon;
   final String label;
 
-  const _InfoRow({
-    required this.icon,
-    required this.label,
-  });
+  const _InfoRow({required this.icon, required this.label});
 
   @override
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Icon(
-          icon,
-          size: 18,
-          color: context.colorScheme.onSurfaceVariant,
-        ),
+        Icon(icon, size: 18, color: context.colorScheme.onSurfaceVariant),
         AppSpacings.gapS,
-        Text(
-          label,
-          style: context.textTheme.bodyMedium,
-        ),
+        Text(label, style: context.textTheme.bodyMedium),
       ],
     );
   }
-}
-
-/// Painter pour dessiner l'illustration de route décorative
-class _RoadPainter extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = const Color(0xFFA6EB2E) // Vert lime
-      ..strokeWidth = 8
-      ..style = PaintingStyle.stroke
-      ..strokeCap = StrokeCap.round;
-
-    final borderPaint = Paint()
-      ..color = const Color(0xFF031B1C) // Bordure foncée
-      ..strokeWidth = 12
-      ..style = PaintingStyle.stroke
-      ..strokeCap = StrokeCap.round;
-
-    final path = Path();
-
-    // Créer une route ondulée
-    path.moveTo(0, size.height * 0.3);
-
-    // Première courbe
-    path.quadraticBezierTo(
-      size.width * 0.25,
-      size.height * 0.1,
-      size.width * 0.5,
-      size.height * 0.3,
-    );
-
-    // Deuxième courbe
-    path.quadraticBezierTo(
-      size.width * 0.75,
-      size.height * 0.5,
-      size.width,
-      size.height * 0.3,
-    );
-
-    // Dessiner la bordure foncée d'abord
-    canvas.drawPath(path, borderPaint);
-
-    // Puis la ligne verte par-dessus
-    canvas.drawPath(path, paint);
-
-    // Ajouter les pointillés de la route
-    final dashedPaint = Paint()
-      ..color = Colors.white
-      ..strokeWidth = 2
-      ..style = PaintingStyle.stroke;
-
-    final dashPath = Path();
-    dashPath.moveTo(0, size.height * 0.3);
-    dashPath.quadraticBezierTo(
-      size.width * 0.25,
-      size.height * 0.1,
-      size.width * 0.5,
-      size.height * 0.3,
-    );
-    dashPath.quadraticBezierTo(
-      size.width * 0.75,
-      size.height * 0.5,
-      size.width,
-      size.height * 0.3,
-    );
-
-    _drawDashedPath(canvas, dashPath, dashedPaint);
-  }
-
-  void _drawDashedPath(Canvas canvas, Path path, Paint paint) {
-    final pathMetrics = path.computeMetrics();
-    for (final metric in pathMetrics) {
-      double distance = 0;
-      while (distance < metric.length) {
-        final segment = metric.extractPath(distance, distance + 10);
-        canvas.drawPath(segment, paint);
-        distance += 20;
-      }
-    }
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }

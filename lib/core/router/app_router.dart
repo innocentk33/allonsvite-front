@@ -1,4 +1,5 @@
 import 'package:allonsvite/features/auth/data/auth_providers.dart';
+import 'package:allonsvite/features/rides/presentation/pages/location_search_page.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:allonsvite/features/auth/presentation/pages/phone_login_page.dart';
@@ -7,11 +8,11 @@ import 'package:allonsvite/features/auth/presentation/pages/create_profil_page.d
 import 'package:allonsvite/features/navigation/home_page.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-
 import '../../features/navigation/splash_page.dart';
 import '../../features/rides/presentation/pages/finding_ride_page.dart';
 import 'app_routes.dart';
 part 'app_router.g.dart';
+
 // Provider pour GoRouter
 // Dépend de l'état d'authentification pour rediriger correctement
 @riverpod
@@ -22,8 +23,8 @@ GoRouter appRouter(Ref ref) {
   return GoRouter(
     initialLocation: AppRoutes.home,
     debugLogDiagnostics: true,
-    redirect: (context, state) async{
-// 1. Récupération des données asynchrones
+    redirect: (context, state) async {
+      // 1. Récupération des données asynchrones
       // Est-ce que j'ai un token ?
       final tokenOption = await authRepo.checkAuthStatus();
       final isLoggedIn = tokenOption.isSome();
@@ -108,16 +109,14 @@ GoRouter appRouter(Ref ref) {
         routes: [
           // Routes imbriquées sous home
           GoRoute(
-            path: 'search-trip',
-            builder: (context, state) => const SizedBox.shrink(), // À implémenter
+            path: AppRoutes.notifications,
+            builder: (context, state) =>
+                const SizedBox.shrink(), // À implémenter
           ),
           GoRoute(
-            path: 'notifications',
-            builder: (context, state) => const SizedBox.shrink(), // À implémenter
-          ),
-          GoRoute(
-            path: 'settings',
-            builder: (context, state) => const SizedBox.shrink(), // À implémenter
+            path: AppRoutes.settings,
+            builder: (context, state) =>
+                const SizedBox.shrink(), // À implémenter
           ),
         ],
       ),
@@ -126,6 +125,10 @@ GoRouter appRouter(Ref ref) {
       GoRoute(
         path: AppRoutes.findingRide,
         builder: (context, state) => const FindingRidePage(),
+      ),
+      GoRoute(
+        path: AppRoutes.findLocation,
+        builder: (context, state) => const LocationSearchPage(),
       ),
 
       // Route Ride Details
@@ -188,11 +191,7 @@ GoRouter appRouter(Ref ref) {
         builder: (context, state) => const SizedBox.shrink(), // À implémenter
       ),
     ],
-    errorBuilder: (context, state) => Scaffold(
-      body: Center(
-        child: Text('Erreur 404: ${state.error}'),
-      ),
-    ),
+    errorBuilder: (context, state) =>
+        Scaffold(body: Center(child: Text('Erreur 404: ${state.error}'))),
   );
 }
-

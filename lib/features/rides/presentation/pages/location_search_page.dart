@@ -1,75 +1,60 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 
 import '../../../../core/extension/build_context_ext.dart';
 import '../../../../core/themes/app_spacing.dart';
+import '../../domain/location.dart';
+import '../controllers/location_controller.dart';
 
-class LocationSearchPage extends StatefulWidget {
+class LocationSearchPage extends ConsumerStatefulWidget {
   const LocationSearchPage({super.key});
 
   @override
-  State<LocationSearchPage> createState() => _LocationSearchPageState();
+  ConsumerState<LocationSearchPage> createState() => _LocationSearchPageState();
 }
 
-class _LocationSearchPageState extends State<LocationSearchPage> {
+class _LocationSearchPageState extends ConsumerState<LocationSearchPage> {
   late TextEditingController _searchController;
-  late List<String> _communes;
-  late List<String> _filteredCommunes;
+  String _searchQuery = '';
 
   @override
   void initState() {
     super.initState();
     _searchController = TextEditingController();
-
-    // Liste des communes d'Abidjan
-    _communes = [
-      'Abobo',
-      'Abidjan',
-      'Adjamé',
-      'Attécoubé',
-      'Cocody',
-      'Koumassi',
-      'Marcory',
-      'Plateau',
-      'Port-Bouët',
-      'Treichville',
-      'Yopougon',
-      'Bingerville',
-      'Songon',
-      'Anyama',
-    ];
-
-    _filteredCommunes = List.from(_communes);
-
-    _searchController.addListener(_filterCommunes);
+    _searchController.addListener(_onSearchChanged);
   }
 
   @override
   void dispose() {
-    _searchController.removeListener(_filterCommunes);
+    _searchController.removeListener(_onSearchChanged);
     _searchController.dispose();
     super.dispose();
   }
 
-  void _filterCommunes() {
-    final query = _searchController.text.toLowerCase();
+  void _onSearchChanged() {
     setState(() {
-      if (query.isEmpty) {
-        _filteredCommunes = List.from(_communes);
-      } else {
-        _filteredCommunes = _communes
-            .where((commune) => commune.toLowerCase().contains(query))
-            .toList();
-      }
+      _searchQuery = _searchController.text.toLowerCase();
     });
   }
 
-  void _selectCommune(String commune) {
-    Navigator.pop(context, commune);
+  void _selectLocation(Location location) {
+    Navigator.pop(context, location);
+  }
+
+  List<Location> _filterLocations(List<Location> locations) {
+    if (_searchQuery.isEmpty) {
+      return locations;
+    }
+    return locations
+        .where((location) => location.name.toLowerCase().contains(_searchQuery))
+        .toList();
   }
 
   @override
   Widget build(BuildContext context) {
+    final locationsAsync = ref.watch(locationListControllerProvider);
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -94,7 +79,9 @@ class _LocationSearchPageState extends State<LocationSearchPage> {
                 decoration: InputDecoration(
                   hintText: 'Chercher une commune...',
                   hintStyle: context.textTheme.bodyLarge?.copyWith(
-                    color: context.colorScheme.onSurfaceVariant.withValues(alpha: 0.4),
+                    color: context.colorScheme.onSurfaceVariant.withValues(
+                      alpha: 0.4,
+                    ),
                   ),
                   prefixIcon: Icon(
                     LucideIcons.search,
@@ -103,27 +90,23 @@ class _LocationSearchPageState extends State<LocationSearchPage> {
                   ),
                   suffixIcon: _searchController.text.isNotEmpty
                       ? IconButton(
-                    icon: Icon(
-                      LucideIcons.x,
-                      color: context.colorScheme.onSurfaceVariant,
-                      size: 20,
-                    ),
-                    onPressed: () {
-                      _searchController.clear();
-                    },
-                  )
+                          icon: Icon(
+                            LucideIcons.x,
+                            color: context.colorScheme.onSurfaceVariant,
+                            size: 20,
+                          ),
+                          onPressed: () {
+                            _searchController.clear();
+                          },
+                        )
                       : null,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(
-                      color: context.colorScheme.outline,
-                    ),
+                    borderSide: BorderSide(color: context.colorScheme.outline),
                   ),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(
-                      color: context.colorScheme.outline,
-                    ),
+                    borderSide: BorderSide(color: context.colorScheme.outline),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
@@ -141,53 +124,73 @@ class _LocationSearchPageState extends State<LocationSearchPage> {
               ),
             ),
             AppSpacings.gapL,
-            // Liste des communes
+            // Liste des communes avec gestion d'état
             Expanded(
-              child: _filteredCommunes.isEmpty
-                  ? Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      LucideIcons.mapPin,
-                      size: 48,
-                      color: context.colorScheme.onSurfaceVariant,
+              child: locationsAsync.when(
+                loading: () => const Center(child: CircularProgressIndicator()),
+                error: (error, stack) => Center(
+                  child: Text(
+                    'Erreur lors du chargement des lieux',
+                    style: context.textTheme.bodyLarge?.copyWith(
+                      color: Colors.red,
                     ),
-                    AppSpacings.gapL,
-                    Text(
-                      'Aucune commune trouvée',
-                      style: context.textTheme.bodyLarge?.copyWith(
-                        color: context.colorScheme.onSurfaceVariant,
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
-              )
-                  : ListView.separated(
-                padding: AppSpacings.pL,
-                itemCount: _filteredCommunes.length,
-                separatorBuilder: (context, index) => const Divider(height: 1),
-                itemBuilder: (context, index) {
-                  final commune = _filteredCommunes[index];
-                  return ListTile(
-                    contentPadding: const EdgeInsets.symmetric(
-                      vertical: AppSpacings.m,
-                    ),
-                    leading: Icon(
-                      LucideIcons.mapPin,
-                      color: context.colorScheme.primary,
-                      size: 20,
-                    ),
-                    title: Text(
-                      commune,
-                      style: context.textTheme.bodyLarge,
-                    ),
-                    onTap: () => _selectCommune(commune),
-                    trailing: Icon(
-                      LucideIcons.chevronRight,
-                      color: context.colorScheme.onSurfaceVariant,
-                      size: 20,
-                    ),
+                data: (locations) {
+                  final filteredLocations = _filterLocations(locations);
+
+                  if (filteredLocations.isEmpty) {
+                    return Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            LucideIcons.mapPin,
+                            size: 48,
+                            color: context.colorScheme.onSurfaceVariant,
+                          ),
+                          AppSpacings.gapL,
+                          Text(
+                            _searchQuery.isEmpty
+                                ? 'Aucun lieu disponible'
+                                : 'Aucune commune trouvée',
+                            style: context.textTheme.bodyLarge?.copyWith(
+                              color: context.colorScheme.onSurfaceVariant,
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  }
+
+                  return ListView.separated(
+                    padding: AppSpacings.phM,
+                    itemCount: filteredLocations.length,
+                    separatorBuilder: (context, index) =>
+                        const Divider(height: 1),
+                    itemBuilder: (context, index) {
+                      final location = filteredLocations[index];
+                      return ListTile(
+                        contentPadding: const EdgeInsets.symmetric(
+                          vertical: AppSpacings.m,
+                        ),
+                        leading: Icon(
+                          LucideIcons.mapPin,
+                          color: context.colorScheme.primary,
+                          size: 20,
+                        ),
+                        title: Text(
+                          location.name,
+                          style: context.textTheme.bodyLarge,
+                        ),
+                        onTap: () => _selectLocation(location),
+                        trailing: Icon(
+                          LucideIcons.chevronRight,
+                          color: context.colorScheme.onSurfaceVariant,
+                          size: 20,
+                        ),
+                      );
+                    },
                   );
                 },
               ),
@@ -198,4 +201,3 @@ class _LocationSearchPageState extends State<LocationSearchPage> {
     );
   }
 }
-
