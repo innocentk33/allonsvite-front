@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:lucide_icons/lucide_icons.dart' as lucide;
-import '../../core/extension/build_context_ext.dart';
-import '../../core/themes/app_spacing.dart';
+import 'package:lucide_icons/lucide_icons.dart';
+
+import '../../../../core/extension/build_context_ext.dart';
+import '../../../../core/themes/app_spacing.dart';
 
 class LocationSearchPage extends StatefulWidget {
   const LocationSearchPage({super.key});
@@ -96,21 +97,21 @@ class _LocationSearchPageState extends State<LocationSearchPage> {
                     color: context.colorScheme.onSurfaceVariant.withValues(alpha: 0.4),
                   ),
                   prefixIcon: Icon(
-                    lucide.LucideIcons.search,
+                    LucideIcons.search,
                     color: context.colorScheme.onSurfaceVariant,
                     size: 20,
                   ),
                   suffixIcon: _searchController.text.isNotEmpty
                       ? IconButton(
-                          icon: Icon(
-                            lucide.LucideIcons.x,
-                            color: context.colorScheme.onSurfaceVariant,
-                            size: 20,
-                          ),
-                          onPressed: () {
-                            _searchController.clear();
-                          },
-                        )
+                    icon: Icon(
+                      LucideIcons.x,
+                      color: context.colorScheme.onSurfaceVariant,
+                      size: 20,
+                    ),
+                    onPressed: () {
+                      _searchController.clear();
+                    },
+                  )
                       : null,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
@@ -144,52 +145,52 @@ class _LocationSearchPageState extends State<LocationSearchPage> {
             Expanded(
               child: _filteredCommunes.isEmpty
                   ? Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            lucide.LucideIcons.mapPin,
-                            size: 48,
-                            color: context.colorScheme.onSurfaceVariant,
-                          ),
-                          AppSpacings.gapL,
-                          Text(
-                            'Aucune commune trouvée',
-                            style: context.textTheme.bodyLarge?.copyWith(
-                              color: context.colorScheme.onSurfaceVariant,
-                            ),
-                          ),
-                        ],
-                      ),
-                    )
-                  : ListView.separated(
-                      padding: AppSpacings.pL,
-                      itemCount: _filteredCommunes.length,
-                      separatorBuilder: (context, index) => const Divider(height: 1),
-                      itemBuilder: (context, index) {
-                        final commune = _filteredCommunes[index];
-                        return ListTile(
-                          contentPadding: const EdgeInsets.symmetric(
-                            vertical: AppSpacings.m,
-                          ),
-                          leading: Icon(
-                            lucide.LucideIcons.mapPin,
-                            color: context.colorScheme.primary,
-                            size: 20,
-                          ),
-                          title: Text(
-                            commune,
-                            style: context.textTheme.bodyLarge,
-                          ),
-                          onTap: () => _selectCommune(commune),
-                          trailing: Icon(
-                            lucide.LucideIcons.chevronRight,
-                            color: context.colorScheme.onSurfaceVariant,
-                            size: 20,
-                          ),
-                        );
-                      },
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      LucideIcons.mapPin,
+                      size: 48,
+                      color: context.colorScheme.onSurfaceVariant,
                     ),
+                    AppSpacings.gapL,
+                    Text(
+                      'Aucune commune trouvée',
+                      style: context.textTheme.bodyLarge?.copyWith(
+                        color: context.colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                  ],
+                ),
+              )
+                  : ListView.separated(
+                padding: AppSpacings.pL,
+                itemCount: _filteredCommunes.length,
+                separatorBuilder: (context, index) => const Divider(height: 1),
+                itemBuilder: (context, index) {
+                  final commune = _filteredCommunes[index];
+                  return ListTile(
+                    contentPadding: const EdgeInsets.symmetric(
+                      vertical: AppSpacings.m,
+                    ),
+                    leading: Icon(
+                      LucideIcons.mapPin,
+                      color: context.colorScheme.primary,
+                      size: 20,
+                    ),
+                    title: Text(
+                      commune,
+                      style: context.textTheme.bodyLarge,
+                    ),
+                    onTap: () => _selectCommune(commune),
+                    trailing: Icon(
+                      LucideIcons.chevronRight,
+                      color: context.colorScheme.onSurfaceVariant,
+                      size: 20,
+                    ),
+                  );
+                },
+              ),
             ),
           ],
         ),

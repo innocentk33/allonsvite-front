@@ -6,11 +6,8 @@ import 'package:allonsvite/core/widgets/button_with_loading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-
 import '../../../../core/router/app_routes.dart';
 import '../controllers/auth_controller.dart';
-
-
 
 class CreateProfilPage extends ConsumerStatefulWidget {
   const CreateProfilPage({super.key});
@@ -18,8 +15,6 @@ class CreateProfilPage extends ConsumerStatefulWidget {
   @override
   ConsumerState<CreateProfilPage> createState() => _CreateProfilPageState();
 }
-
-
 
 class _CreateProfilPageState extends ConsumerState<CreateProfilPage> {
   late TextEditingController _firstNameController;
@@ -74,10 +69,12 @@ class _CreateProfilPageState extends ConsumerState<CreateProfilPage> {
     if (!_validateFields()) return;
 
     // Appel au Controller Riverpod
-    ref.read(authControllerProvider.notifier).createProfile(
-      firstName: _firstNameController.text.trim(),
-      lastName: _lastNameController.text.trim(),
-    );
+    ref
+        .read(authControllerProvider.notifier)
+        .createProfile(
+          firstName: _firstNameController.text.trim(),
+          lastName: _lastNameController.text.trim(),
+        );
   }
 
   @override
@@ -102,16 +99,6 @@ class _CreateProfilPageState extends ConsumerState<CreateProfilPage> {
     });
 
     return Scaffold(
-      appBar: AppBar(
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.refresh),
-            onPressed: () async{
-              await ref.read(authControllerProvider.notifier).verifyOtp('0748951104', '810178');
-            },
-          ),
-        ],
-      ),
       body: SafeArea(
         child: Column(
           children: [
@@ -133,7 +120,8 @@ class _CreateProfilPageState extends ConsumerState<CreateProfilPage> {
                       focusNode: _firstNameFocusNode,
                       placeholder: 'ex. Arnaud',
                       onChanged: (_) {
-                        if (_localError != null) setState(() => _localError = null);
+                        if (_localError != null)
+                          setState(() => _localError = null);
                       },
                       onSubmitted: (_) => _lastNameFocusNode.requestFocus(),
                     ),
@@ -145,7 +133,8 @@ class _CreateProfilPageState extends ConsumerState<CreateProfilPage> {
                       focusNode: _lastNameFocusNode,
                       placeholder: 'ex. Bamba',
                       onChanged: (_) {
-                        if (_localError != null) setState(() => _localError = null);
+                        if (_localError != null)
+                          setState(() => _localError = null);
                       },
                       onSubmitted: (_) => _createProfile(),
                     ),
@@ -166,7 +155,7 @@ class _CreateProfilPageState extends ConsumerState<CreateProfilPage> {
               child: ButtonWithLoading(
                 // L'état de chargement vient de Riverpod
                 isLoading: authState.isLoading,
-                onPressed:  _createProfile,
+                onPressed: _createProfile,
                 buttonText: "C'est parti !",
               ),
             ),
@@ -176,6 +165,7 @@ class _CreateProfilPageState extends ConsumerState<CreateProfilPage> {
     );
   }
 }
+
 /// Widget stateful pour un champ de profil
 class _ProfileInputField extends StatefulWidget {
   final String label;
@@ -221,7 +211,9 @@ class _ProfileInputFieldState extends State<_ProfileInputField> {
           decoration: InputDecoration(
             hintText: widget.placeholder,
             hintStyle: context.textTheme.bodyLarge?.copyWith(
-              color: context.colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
+              color: context.colorScheme.onSurfaceVariant.withValues(
+                alpha: 0.5,
+              ),
             ),
             filled: true,
             fillColor: context.colorScheme.secondaryContainer,
@@ -258,4 +250,3 @@ class _ErrorMessage extends StatelessWidget {
     );
   }
 }
-

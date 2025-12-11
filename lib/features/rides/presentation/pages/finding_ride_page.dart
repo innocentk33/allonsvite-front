@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:lucide_icons/lucide_icons.dart' as lucide;
-import '../../core/extension/build_context_ext.dart';
-import '../../core/themes/app_spacing.dart';
+import 'package:lucide_icons/lucide_icons.dart';
+
+import '../../../../core/extension/build_context_ext.dart';
+import '../../../../core/themes/app_spacing.dart';
+
 
 class FindingRidePage extends StatelessWidget {
   const FindingRidePage({super.key});
@@ -40,7 +42,7 @@ class FindingRidePage extends StatelessWidget {
                         ),
                         AppSpacings.gapS,
                         Icon(
-                          lucide.LucideIcons.arrowRight,
+                          LucideIcons.arrowRight,
                           size: 16,
                           color: context.colorScheme.primary,
                         ),
@@ -272,7 +274,7 @@ class _RideCard extends StatelessWidget {
                           ),
                           AppSpacings.gapS,
                           Icon(
-                            lucide.LucideIcons.users,
+                            LucideIcons.users,
                             size: 14,
                             color: context.colorScheme.onSurfaceVariant,
                           ),

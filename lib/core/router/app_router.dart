@@ -5,11 +5,11 @@ import 'package:allonsvite/features/auth/presentation/pages/phone_login_page.dar
 import 'package:allonsvite/features/auth/presentation/pages/otp_verification_page.dart';
 import 'package:allonsvite/features/auth/presentation/pages/create_profil_page.dart';
 import 'package:allonsvite/features/navigation/home_page.dart';
-import 'package:allonsvite/features/trips/finding_ride.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 
 import '../../features/navigation/splash_page.dart';
+import '../../features/rides/presentation/pages/finding_ride_page.dart';
 import 'app_routes.dart';
 part 'app_router.g.dart';
 // Provider pour GoRouter

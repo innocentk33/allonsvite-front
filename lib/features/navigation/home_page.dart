@@ -1,4 +1,5 @@
-import 'package:allonsvite/features/trips/search_trip.dart';
+import 'package:allonsvite/features/rides/presentation/pages/search_ride_page.dart';
+
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart' as lucide;
 import 'package:allonsvite/core/extension/build_context_ext.dart';
@@ -19,7 +20,7 @@ class _HomePageState extends State<HomePage> {
       body: IndexedStack(
         index: _selectedIndex,
         children: const [
-          SearchTrip(),
+          SearchRidePage(),
           _PublishTripPage(),
           _TripsPage(),
           _ProfilePage(),

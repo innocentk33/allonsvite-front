@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:lucide_icons/lucide_icons.dart' as lucide;
-import '../../core/extension/build_context_ext.dart';
-import '../../core/themes/app_spacing.dart';
+import 'package:lucide_icons/lucide_icons.dart';
+import '../../../../core/extension/build_context_ext.dart';
+import '../../../../core/themes/app_spacing.dart';
 import 'location_search_page.dart';
 
-class SearchTrip extends StatefulWidget {
-  const SearchTrip({super.key});
+class SearchRidePage extends StatefulWidget {
+  const SearchRidePage({super.key});
 
   @override
-  State<SearchTrip> createState() => _SearchTripState();
+  State<SearchRidePage> createState() => _SearchRidePageState();
 }
 
-class _SearchTripState extends State<SearchTrip> {
+class _SearchRidePageState extends State<SearchRidePage> {
   late TextEditingController _fromController;
   late TextEditingController _toController;
   int _numberOfPeople = 0;
@@ -298,7 +298,7 @@ class _SearchTripState extends State<SearchTrip> {
                                   IconButton(
                                     onPressed: _swapLocations,
                                     icon: Icon(
-                                      lucide.LucideIcons.arrowUpDown,
+                                      LucideIcons.arrowUpDown,
                                       color: context.colorScheme.onSurfaceVariant,
                                       size: 20,
                                     ),
@@ -325,7 +325,7 @@ class _SearchTripState extends State<SearchTrip> {
                               GestureDetector(
                                 onTap: _selectDate,
                                 child: _InfoRow(
-                                  icon: lucide.LucideIcons.calendar,
+                                  icon: LucideIcons.calendar,
                                   label: _formatDate(_selectedDate),
                                 ),
                               ),
@@ -339,7 +339,7 @@ class _SearchTripState extends State<SearchTrip> {
                                 child: Row(
                                   children: [
                                     Icon(
-                                      lucide.LucideIcons.users,
+                                      LucideIcons.users,
                                       size: 18,
                                       color: context.colorScheme.onSurfaceVariant,
                                     ),
