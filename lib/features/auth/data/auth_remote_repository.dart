@@ -67,10 +67,8 @@ class AuthRemoteRepository {
 
       if (response.statusCode == 200) {
         final data = response.data;
-        print('Info recuprérées: $data');
         final AuthUser user = AuthUser.fromJson(data);
-        print('User créé: $user');
-        return right(AuthUser.fromJson(data));
+        return right(user);
       } else {
         return left(Failure('Erreur lors de la récupération des informations'));
       }

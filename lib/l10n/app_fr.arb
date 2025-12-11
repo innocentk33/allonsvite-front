@@ -50,5 +50,10 @@
   "takePhotoMessage": "Aidez les chauffeurs ou les passagers à vous identifier plus facilement, cela augmente la confiance.",
   "welcomeMessage": "Bienvenue sur mon application",
   "loginButton": "Se connecter",
-  "trips": "voyages"
+  "trips": "voyages",
+  "homeGreetingMessage": "Que souhaitez-vous faire aujourd'hui ?",
+  "today": "Aujourd'hui",
+  "tomorrow": "Demain",
+  "person": "Person",
+  "people": "Personnes"
 }

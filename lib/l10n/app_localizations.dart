@@ -391,6 +391,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'trips'**
   String get trips;
+
+  /// No description provided for @homeGreetingMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'What would you like to do today?'**
+  String get homeGreetingMessage;
+
+  /// No description provided for @today.
+  ///
+  /// In en, this message translates to:
+  /// **'Today'**
+  String get today;
+
+  /// No description provided for @tomorrow.
+  ///
+  /// In en, this message translates to:
+  /// **'Tomorrow'**
+  String get tomorrow;
+
+  /// No description provided for @person.
+  ///
+  /// In en, this message translates to:
+  /// **'Person'**
+  String get person;
+
+  /// No description provided for @people.
+  ///
+  /// In en, this message translates to:
+  /// **'People'**
+  String get people;
 }
 
 class _AppLocalizationsDelegate

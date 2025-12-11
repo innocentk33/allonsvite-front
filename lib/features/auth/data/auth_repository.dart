@@ -46,7 +46,6 @@ class AuthRepository {
         final token = authResponse.accessToken;
         await _localRepository.saveToken(token);
         final userResult = await _remoteRepository.getUser(token);
-        print('User result from orchestrateur: $userResult');
         return userResult.fold(
               (failure) async {
             // Cas particulier : Le token est bon, mais l'API User échoue (réseau, 500...)

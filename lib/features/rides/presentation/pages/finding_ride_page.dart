@@ -1,15 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 
 import '../../../../core/extension/build_context_ext.dart';
 import '../../../../core/themes/app_spacing.dart';
+import '../../domain/ride.dart';
+import '../controllers/ride_list_controller.dart';
 
+class FindingRidePage extends ConsumerWidget {
+  final RideSearchParams params;
 
-class FindingRidePage extends StatelessWidget {
-  const FindingRidePage({super.key});
+  const FindingRidePage({super.key, this.params = const RideSearchParams()});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final ridesAsync = ref.watch(rideListControllerProvider(params));
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -20,178 +26,115 @@ class FindingRidePage extends StatelessWidget {
         elevation: 0,
       ),
       body: SafeArea(
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // En-tête avec localisation et détails
-              Padding(
-                padding: AppSpacings.pL,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Localisation
-                    Row(
+        child: ridesAsync.when(
+          loading: () => const Center(child: CircularProgressIndicator()),
+          error: (error, stack) => Center(child: Text('Erreur: $error')),
+          data: (rides) {
+            if (rides.isEmpty) {
+              return const Center(child: Text('Aucun trajet trouvé.'));
+            }
+            return SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // En-tête avec localisation et détails
+                  Padding(
+                    padding: AppSpacings.pL,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          'Cold Stone ..., Yaba',
-                          style: context.textTheme.titleMedium?.copyWith(
-                            color: context.colorScheme.primary,
-                            fontWeight: FontWeight.w600,
-                          ),
+                        // Localisation
+                        Row(
+                          children: [
+                            Text(
+                              params.fromLocation ?? '',
+                              style: context.textTheme.titleMedium?.copyWith(
+                                color: context.colorScheme.primary,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            AppSpacings.gapS,
+                            Icon(
+                              LucideIcons.arrowRight,
+                              size: 16,
+                              color: context.colorScheme.primary,
+                            ),
+                            AppSpacings.gapS,
+                            Text(
+                              params.toLocation ?? '',
+                              style: context.textTheme.titleMedium?.copyWith(
+                                color: context.colorScheme.primary,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
                         ),
                         AppSpacings.gapS,
-                        Icon(
-                          LucideIcons.arrowRight,
-                          size: 16,
-                          color: context.colorScheme.primary,
-                        ),
-                        AppSpacings.gapS,
+                        // Détails du trajet
                         Text(
-                          'Lekki Phase 1, Lekki',
-                          style: context.textTheme.titleMedium?.copyWith(
-                            color: context.colorScheme.primary,
-                            fontWeight: FontWeight.w600,
+                          '${params.date?.toLocal().toString().split(' ')[0] ?? ''} • ${params.seats ?? 1} Seats',
+                          style: context.textTheme.bodySmall?.copyWith(
+                            color: context.colorScheme.onSurfaceVariant,
                           ),
                         ),
                       ],
                     ),
-                    AppSpacings.gapS,
-                    // Détails du trajet
-                    Text(
-                      'Fri 18 Aug • 06:00 AM • 2 Seats',
-                      style: context.textTheme.bodySmall?.copyWith(
-                        color: context.colorScheme.onSurfaceVariant,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              AppSpacings.gapL,
-              // Filtres
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                padding: AppSpacings.phM,
-                child: Row(
-                  children: [
-                    _FilterChip(
-                      label: 'All',
-                      isActive: true,
-                    ),
-                    AppSpacings.gapS,
-                    _FilterChip(
-                      label: 'Male only',
-                      isActive: false,
-                    ),
-                    AppSpacings.gapS,
-                    _FilterChip(
-                      label: 'Female only',
-                      isActive: false,
-                    ),
-                  ],
-                ),
-              ),
-              AppSpacings.gapXL,
-              // Section: Trajets disponibles
-              Padding(
-                padding: AppSpacings.phM,
-                child: Text(
-                  'AVAILABLE RIDES',
-                  style: context.textTheme.labelSmall?.copyWith(
-                    color: context.colorScheme.onSurfaceVariant,
-                    fontSize: 12,
                   ),
-                ),
-              ),
-              AppSpacings.gapM,
-              // Sous-titre: Drivers previously shared
-              Padding(
-                padding: AppSpacings.phM,
-                child: Text(
-                  'Drivers you previously shared a ride with',
-                  style: context.textTheme.bodyMedium?.copyWith(
-                    fontWeight: FontWeight.w600,
+                  AppSpacings.gapL,
+                  // Filtres (Statique pour l'instant)
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    padding: AppSpacings.phM,
+                    child: Row(
+                      children: const [
+                        _FilterChip(label: 'All', isActive: true),
+                        AppSpacings.gapS,
+                        _FilterChip(label: 'Male only', isActive: false),
+                        AppSpacings.gapS,
+                        _FilterChip(label: 'Female only', isActive: false),
+                      ],
+                    ),
                   ),
-                ),
-              ),
-              AppSpacings.gapM,
-              // Cards des chauffeurs
-              _RideCard(
-                driverName: 'Olakunle Diran',
-                departureTime: 'Departs at 06:00 AM',
-                distance: '0.3km away',
-                price: '₦2,500',
-                rating: 4.9,
-                seats: 1,
-                avatarColor: Colors.blue,
-              ),
-              AppSpacings.gapM,
-              _RideCard(
-                driverName: 'Oduola Toyosi',
-                departureTime: 'Departs at 06:15 AM',
-                distance: '0.4km away',
-                price: '₦4,000',
-                rating: 4.8,
-                seats: 2,
-                avatarColor: Colors.orange,
-              ),
-              AppSpacings.gapM,
-              _RideCard(
-                driverName: 'Emmanuel Ismail',
-                departureTime: 'Departs at 06:15 AM',
-                distance: '0.4km away',
-                price: '₦3,500',
-                rating: 4.7,
-                seats: 1,
-                avatarColor: Colors.green,
-              ),
-              AppSpacings.gapXL,
-              // Section: People in contact
-              Padding(
-                padding: AppSpacings.phM,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'People in you contact',
-                      style: context.textTheme.bodyMedium?.copyWith(
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    AppSpacings.gapS,
-                    Text(
-                      'These suggestions are based off people in your contact\nwho are on Hitch.',
-                      style: context.textTheme.bodySmall?.copyWith(
+                  AppSpacings.gapXL,
+                  // Section: Trajets disponibles
+                  Padding(
+                    padding: AppSpacings.phM,
+                    child: Text(
+                      'AVAILABLE RIDES',
+                      style: context.textTheme.labelSmall?.copyWith(
                         color: context.colorScheme.onSurfaceVariant,
+                        fontSize: 12,
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                  AppSpacings.gapM,
+
+                  // Liste des trajets
+                  ListView.separated(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: rides.length,
+                    separatorBuilder: (context, index) => AppSpacings.gapM,
+                    itemBuilder: (context, index) {
+                      final ride = rides[index];
+                      return _RideCard(
+                        driverName:
+                            'Chauffeur ${ride.id}', // Placeholder, pas de nom dans le modèle Ride pour l'instant
+                        departureTime:
+                            'Départ: ${ride.startAt.hour}:${ride.startAt.minute}',
+                        distance: '', // Pas de distance dans le JSON
+                        price: '${ride.price} FCFA',
+                        rating: 4.5, // Placeholder
+                        seats: ride.numberOfSeats,
+                        avatarColor: Colors.blue, // Placeholder
+                      );
+                    },
+                  ),
+                  AppSpacings.gapXL,
+                ],
               ),
-              AppSpacings.gapL,
-              // Cards des contacts
-              _RideCard(
-                driverName: 'Ogunderu Noah',
-                departureTime: 'Departs at 06:00 AM',
-                distance: '0.3km away',
-                price: '₦2,500',
-                rating: 4.2,
-                seats: 1,
-                avatarColor: Colors.cyan,
-              ),
-              AppSpacings.gapM,
-              _RideCard(
-                driverName: 'Subomi Fortune',
-                departureTime: 'Departs at 06:15 AM',
-                distance: '0.4km away',
-                price: '₦4,000',
-                rating: 4.6,
-                seats: 2,
-                avatarColor: Colors.purple,
-              ),
-              AppSpacings.gapXL,
-            ],
-          ),
+            );
+          },
         ),
       ),
     );
@@ -225,10 +168,7 @@ class _RideCard extends StatelessWidget {
       child: Container(
         decoration: BoxDecoration(
           color: Colors.white,
-          border: Border.all(
-            color: context.colorScheme.outline,
-            width: 1,
-          ),
+          border: Border.all(color: context.colorScheme.outline, width: 1),
           borderRadius: BorderRadius.circular(12),
         ),
         padding: AppSpacings.pL,
@@ -312,10 +252,7 @@ class _FilterChip extends StatelessWidget {
   final String label;
   final bool isActive;
 
-  const _FilterChip({
-    required this.label,
-    required this.isActive,
-  });
+  const _FilterChip({required this.label, required this.isActive});
 
   @override
   Widget build(BuildContext context) {
@@ -342,4 +279,3 @@ class _FilterChip extends StatelessWidget {
     );
   }
 }
-

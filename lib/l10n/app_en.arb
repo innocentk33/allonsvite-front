@@ -50,5 +50,11 @@
   "takePhotoMessage": "Help drivers or riders identify you more easily, this increases trust.",
   "welcomeMessage": "Welcome to my app",
   "loginButton": "Log In",
-  "trips": "trips"
+  "trips": "trips",
+  "homeGreetingMessage": "What would you like to do today?",
+  "today": "Today",
+  "tomorrow": "Tomorrow",
+  "person": "Person",
+  "people": "People"
+
 }

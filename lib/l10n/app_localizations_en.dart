@@ -157,4 +157,19 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get trips => 'trips';
+
+  @override
+  String get homeGreetingMessage => 'What would you like to do today?';
+
+  @override
+  String get today => 'Today';
+
+  @override
+  String get tomorrow => 'Tomorrow';
+
+  @override
+  String get person => 'Person';
+
+  @override
+  String get people => 'People';
 }

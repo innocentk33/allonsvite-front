@@ -1,5 +1,6 @@
 import 'package:allonsvite/core/router/app_routes.dart';
 import 'package:allonsvite/features/rides/domain/location.dart';
+import '../../domain/ride.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons/lucide_icons.dart';
@@ -92,28 +93,33 @@ class _SearchRidePageState extends State<SearchRidePage> {
     final selectedDay = DateTime(date.year, date.month, date.day);
 
     if (selectedDay == today) {
-      return 'Today';
+      return context.l10n.today;
     } else if (selectedDay == tomorrow) {
-      return 'Tomorrow';
+      return context.l10n.tomorrow;
     } else {
       return '${date.day}/${date.month}/${date.year}';
     }
   }
 
   void _findRide() {
-    // Action pour trouver un trajet
-    Navigator.of(context).pushNamed('/finding-ride');
+    final params = RideSearchParams(
+      fromLocation: _fromController.text,
+      toLocation: _toController.text,
+      date: _selectedDate,
+      seats: _numberOfPeople,
+    );
+    context.push(AppRoutes.findingRide, extra: params);
   }
 
-  void _showPeopleDialog() {
+  Future<void> _showPeopleDialog() async {
     int tempPeople = _numberOfPeople;
 
-    showDialog(
+    final int? result = await showDialog<int>(
       context: context,
       builder: (context) => Dialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         child: StatefulBuilder(
-          builder: (context, setState) => Container(
+          builder: (context, setDialogState) => Container(
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(20),
@@ -140,7 +146,7 @@ class _SearchRidePageState extends State<SearchRidePage> {
                       height: 50,
                       child: ElevatedButton(
                         onPressed: tempPeople > 0
-                            ? () => setState(() => tempPeople--)
+                            ? () => setDialogState(() => tempPeople--)
                             : null,
                         style: ElevatedButton.styleFrom(
                           shape: RoundedRectangleBorder(
@@ -166,7 +172,7 @@ class _SearchRidePageState extends State<SearchRidePage> {
                       height: 50,
                       child: ElevatedButton(
                         onPressed: tempPeople < 8
-                            ? () => setState(() => tempPeople++)
+                            ? () => setDialogState(() => tempPeople++)
                             : null,
                         style: ElevatedButton.styleFrom(
                           shape: RoundedRectangleBorder(
@@ -185,10 +191,7 @@ class _SearchRidePageState extends State<SearchRidePage> {
                   width: double.infinity,
                   child: ElevatedButton(
                     onPressed: () {
-                      setState(() {
-                        _numberOfPeople = tempPeople;
-                      });
-                      Navigator.pop(context);
+                      Navigator.pop(context, tempPeople);
                     },
                     style: ElevatedButton.styleFrom(
                       shape: RoundedRectangleBorder(
@@ -209,6 +212,12 @@ class _SearchRidePageState extends State<SearchRidePage> {
         ),
       ),
     );
+
+    if (result != null) {
+      setState(() {
+        _numberOfPeople = result;
+      });
+    }
   }
 
   @override
@@ -234,7 +243,7 @@ class _SearchRidePageState extends State<SearchRidePage> {
                     ),
                     AppSpacings.gapS,
                     Text(
-                      'What would you like to do today?',
+                      context.l10n.homeGreetingMessage,
                       style: context.textTheme.bodyLarge?.copyWith(
                         color: context.colorScheme.onSurfaceVariant,
                       ),
@@ -316,7 +325,7 @@ class _SearchRidePageState extends State<SearchRidePage> {
                                 ),
                                 AppSpacings.gapS,
                                 Text(
-                                  '$_numberOfPeople ${_numberOfPeople == 1 ? 'personne' : 'personnes'}',
+                                  '$_numberOfPeople ${_numberOfPeople <= 1 ? context.l10n.person : context.l10n.people}',
                                   style: context.textTheme.bodyMedium,
                                 ),
                               ],

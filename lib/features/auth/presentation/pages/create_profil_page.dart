@@ -120,8 +120,9 @@ class _CreateProfilPageState extends ConsumerState<CreateProfilPage> {
                       focusNode: _firstNameFocusNode,
                       placeholder: 'ex. Arnaud',
                       onChanged: (_) {
-                        if (_localError != null)
+                        if (_localError != null) {
                           setState(() => _localError = null);
+                        }
                       },
                       onSubmitted: (_) => _lastNameFocusNode.requestFocus(),
                     ),
@@ -133,8 +134,9 @@ class _CreateProfilPageState extends ConsumerState<CreateProfilPage> {
                       focusNode: _lastNameFocusNode,
                       placeholder: 'ex. Bamba',
                       onChanged: (_) {
-                        if (_localError != null)
+                        if (_localError != null) {
                           setState(() => _localError = null);
+                        }
                       },
                       onSubmitted: (_) => _createProfile(),
                     ),

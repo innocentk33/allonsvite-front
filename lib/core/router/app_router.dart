@@ -1,4 +1,5 @@
 import 'package:allonsvite/features/auth/data/auth_providers.dart';
+import 'package:allonsvite/features/rides/domain/ride.dart';
 import 'package:allonsvite/features/rides/presentation/pages/location_search_page.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -124,7 +125,10 @@ GoRouter appRouter(Ref ref) {
       // Route Finding Ride - Recherche de trajet
       GoRoute(
         path: AppRoutes.findingRide,
-        builder: (context, state) => const FindingRidePage(),
+        builder: (context, state) {
+          final params = state.extra as RideSearchParams?;
+          return FindingRidePage(params: params ?? const RideSearchParams());
+        },
       ),
       GoRoute(
         path: AppRoutes.findLocation,
