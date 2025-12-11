@@ -1,10 +1,15 @@
 You are an expert Senior Flutter Developer and UI/UX Designer specialized in building modern, scalable mobile applications.
-
-## PROJECT CONTEXT
+# Project: Allons Vite (Carpooling MVP - Côte d'Ivoire)
+## Tech Stack & Architecture
 - **Framework:** Flutter (Dart)
-- **State Management:** Riverpod (with `riverpod_generator` & annotations)
+- **Architecture:** Feature-First Clean Architecture.
+- **State Management:** Riverpod (with `riverpod_generator` & annotations `@riverpod`)
+- **Navigation:** GoRouter.
 - **Networking:** Dio
+- **Functional Programming:** fpdart (used for error handling in the Data Layer).
+- **Error Handling:** fpdart (`Either`, `Option`, `Unit`).
 - **Style:** Clean, minimalist, modern, adhering to Material 3 design principles.
+- **Local Storage:** FlutterSecureStorage (Sensitive data) & SharedPreferences (Flags).
 - **Icon Pack:** lucide_icons
 - **Fonts:** - Headings/Buttons: "Jokker" (Local)
     - Body Text: "Inter" (Google Fonts)
@@ -42,3 +47,130 @@ You are an expert Senior Flutter Developer and UI/UX Designer specialized in bui
     }
   }
   ```
+### 3. Folder Structure (Feature-First)
+
+Files MUST be organized by **Feature**, then by **Layer**.
+
+``` text
+lib/src/features/
+  ├── auth/
+  │   ├── data/              # Repositories, DataSources, DTOs, Providers
+  │   ├── domain/            # Entities, Failure definitions (Pure Dart)
+  │   ├── presentation/      # Screens, Widgets, Controllers
+  ├── trips/
+  │   ├── ...
+Shared UI: lib/src/core/widgets/
+
+Routing: lib/src/router/app_router.dart
+
+Core logic: lib/src/core/ (Exceptions, Extensions, Theme).
+```
+------------------------------------------------------------------------
+
+## 3. Architecture Rules by Layer
+
+### A. Domain Layer (Pure Dart)
+
+-   Contains Entities and business logic definitions.
+-   **No Flutter dependencies.**
+-   **No Riverpod in Entities.**
+-   **No serialization logic (fromJson).**
+
+### B. Data Layer
+
+Pattern: Repository Pattern with separate Data Sources.
+
+#### Structure:
+
+-   **RemoteDataSource:** API calls with Dio.
+-   **LocalDataSource:** SecureStorage + SharedPreferences.
+-   **Repository:** Orchestrates Remote + Local.
+
+#### Injection:
+
+-   **Never pass `Ref` inside a Repository.**
+-   Dependencies must use constructor injection.
+-   Use a `feature_providers.dart` file for Riverpod wiring.
+
+#### Error Handling (fpdart):
+
+-   Repositories must **catch exceptions**.
+-   Repositories must return: `Future<Either<Failure, T>>`.
+-   Never throw exceptions upward.
+
+#### Example:
+
+```dart
+Future<Either<Failure, Unit>> login(String phone) async {
+  try {
+    final result = await _remoteDataSource.login(phone);
+    await _localDataSource.saveToken(result.token);
+    return right(unit);
+  } catch (e) {
+    return left(Failure(e.toString()));
+  }
+}
+```
+
+------------------------------------------------------------------------
+
+### C. Presentation Layer (UI & State)
+
+#### Controllers:
+
+-   Use `@riverpod` + AsyncNotifier / Notifier.
+-   Expose `AsyncValue<T>`.
+-   Call Repository methods.
+-   Use `.fold()` to handle Either.
+-   **No navigation inside controllers.**
+
+#### Widgets:
+
+-   Use `ConsumerWidget` / `ConsumerStatefulWidget`.
+-   Use `ref.listen` for side effects (navigation, snackbars).
+-   UI must contain **no business logic**.
+
+#### Example:
+
+```dart
+@riverpod
+class AuthController extends _$AuthController {
+  @override
+  FutureOr<void> build() {}
+
+  Future<void> login(String phone) async {
+    state = const AsyncLoading();
+    final repo = ref.read(authRepositoryProvider);
+    final result = await repo.login(phone);
+
+    state = result.fold(
+      (failure) => AsyncError(failure.message, StackTrace.current),
+      (success) => const AsyncData(null),
+    );
+  }
+}
+```
+
+------------------------------------------------------------------------
+
+## 4. Navigation Rules (GoRouter)
+
+-   Centralized in `app_router.dart`.
+-   Use `redirect` for auth/profile guards.
+-   Redirection uses:
+    -   token presence
+    -   profile completion flag
+-   Router must be reactive to Auth state.
+-   UI triggers navigation; Router decides final destination.
+
+------------------------------------------------------------------------
+
+## 5. Coding Standards
+
+-   **Imports:** Relative for feature-internal files; package imports
+    for core/shared.
+-   **Async:** Prefer `async/await` over `.then()`.
+-   **Linting:** Standard Flutter lints.
+-   **Riverpod:**
+    -   `ref.watch` inside build.
+    -   `ref.read` in callbacks.
