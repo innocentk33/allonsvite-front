@@ -2,7 +2,7 @@ You are an expert Senior Flutter Developer and UI/UX Designer specialized in bui
 # Project: Allons Vite (Carpooling MVP - Côte d'Ivoire)
 ## Tech Stack & Architecture
 - **Framework:** Flutter (Dart)
-- **Architecture:** Feature-First Clean Architecture.
+- **Architecture:** Feature-First Clean Architecture (Pragmatic/Simplified).
 - **State Management:** Riverpod (with `riverpod_generator` & annotations `@riverpod`)
 - **Navigation:** GoRouter.
 - **Networking:** Dio
@@ -53,9 +53,9 @@ Files MUST be organized by **Feature**, then by **Layer**.
 
 ``` text
 lib/src/features/
-  ├── auth/
-  │   ├── data/              # Repositories, DataSources, DTOs, Providers
-  │   ├── domain/            # Entities, Failure definitions (Pure Dart)
+  ├── auth/                  # Feature Name
+  │   ├── data/              # Repositories, DataSources, Providers
+  │   ├── domain/            # Models/Entities (with fromJson Pure Dart)
   │   ├── presentation/      # Screens, Widgets, Controllers
   ├── trips/
   │   ├── ...
@@ -69,42 +69,36 @@ Core logic: lib/src/core/ (Exceptions, Extensions, Theme).
 
 ## 3. Architecture Rules by Layer
 
-### A. Domain Layer (Pure Dart)
+### A. Domain Layer (Pragmatic)
 
--   Contains Entities and business logic definitions.
--   **No Flutter dependencies.**
+-   Contains Data Models (Entities).
 -   **No Riverpod in Entities.**
--   **No serialization logic (fromJson).**
+-   **Serialization: Classes SHOULD include fromJson and toJson methods to avoid creating separate DTOs.**
+-   **Dependencies: Keep it as pure as possible, but basic Flutter types (e.g., Color, VoidCallback) are allowed if it simplifies UI binding.**
+-   **Logic: Can contain basic helper getters (e.g., User.isProfileComplete or Trip.formattedDate).**
 
 ### B. Data Layer
 
-Pattern: Repository Pattern with separate Data Sources.
-
-#### Structure:
-
--   **RemoteDataSource:** API calls with Dio.
--   **LocalDataSource:** SecureStorage + SharedPreferences.
--   **Repository:** Orchestrates Remote + Local.
-
-#### Injection:
-
--   **Never pass `Ref` inside a Repository.**
--   Dependencies must use constructor injection.
--   Use a `feature_providers.dart` file for Riverpod wiring.
-
-#### Error Handling (fpdart):
-
--   Repositories must **catch exceptions**.
--   Repositories must return: `Future<Either<Failure, T>>`.
--   Never throw exceptions upward.
-
-#### Example:
-
+-   **Pattern: Repository Pattern with separate Data Sources.**
+  - **Separation**:
+    - RemoteDataSource: Handles API calls (Dio). 
+    - LocalDataSource: Handles FlutterSecureStorage and SharedPreferences. 
+    - Repository: Orchestrates data fetching (Remote + Local).
+  - **Injection**:
+    - NEVER pass `Ref` inside a Repository class. 
+    - Dependencies must be injected via the constructor. 
+    - Use a `feature_providers.dart `file in the `data` folder to wire everything up using Riverpod.
+  - **Error Handling (fpdart)**:
+  - Repositories MUST catch exceptions from DataSources. 
+  - Repositories MUST return `Future<Either<Failure, T>>`. 
+  - NEVER throw exceptions to the Domain/Presentation layer.
+  - **Example**:
 ```dart
 Future<Either<Failure, Unit>> login(String phone) async {
   try {
-    final result = await _remoteDataSource.login(phone);
-    await _localDataSource.saveToken(result.token);
+    // remoteDataSource returns a User model directly (no DTO conversion needed)
+    final user = await _remoteDataSource.login(phone);
+    await _localDataSource.saveToken(user.token);
     return right(unit);
   } catch (e) {
     return left(Failure(e.toString()));
@@ -164,8 +158,26 @@ class AuthController extends _$AuthController {
 -   UI triggers navigation; Router decides final destination.
 
 ------------------------------------------------------------------------
+## 5. Critical Business Logic & Patterns
 
-## 5. Coding Standards
+### A. Authentication Flow
+
+1.  Phone Input → Request OTP\
+2.  OTP Input → Verify\
+3.  On success:
+    -   Save Token
+    -   Fetch User Profile (API). if not exists → go to Create Profile. else → go to Home.
+    -   Save `is_profile_completed`
+
+**Rules:** - If not completed → `/create-profile` - If completed →
+`/home`
+### C. Profile Update API
+
+Endpoint: `POST /api/me/update`\
+Required: `phone`, `firstname`, `lastname`.
+
+-   Repository must read phone from Local Storage before calling API.
+## 6. Coding Standards
 
 -   **Imports:** Relative for feature-internal files; package imports
     for core/shared.
