@@ -1,5 +1,5 @@
+import 'package:allonsvite/features/rides/domain/model/ride.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import '../../domain/ride.dart';
 import '../../data/feature_providers.dart';
 
 part 'ride_list_controller.g.dart';

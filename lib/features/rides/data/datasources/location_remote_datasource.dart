@@ -19,8 +19,13 @@ class LocationRemoteDataSource {
   Future<List<Location>> getLocations() async {
     final response = await _dio.get(AppConstant.locations);
     if (response.statusCode == 200 || response.statusCode == 201) {
-      final ApiResponse apiResponse = ApiResponse.fromJson(response.data);
-      return apiResponse.data.map((json) => Location.fromJson(json)).toList();
+      final apiResponse = ApiResponse<List<Location>>.fromJson(
+        response.data,
+        (data) => (data as List)
+            .map((e) => Location.fromJson(e as Map<String, dynamic>))
+            .toList(),
+      );
+      return apiResponse.data;
     } else {
       throw Exception('Failed to load locations');
     }

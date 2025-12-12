@@ -1,11 +1,13 @@
+import 'package:allonsvite/core/router/app_routes.dart';
+import 'package:allonsvite/features/rides/presentation/controllers/ride_list_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 
 import '../../../../core/extension/build_context_ext.dart';
 import '../../../../core/themes/app_spacing.dart';
-import '../../domain/ride.dart';
-import '../controllers/ride_list_controller.dart';
+import '../../domain/model/ride.dart';
 
 class FindingRidePage extends ConsumerWidget {
   final RideSearchParams params;
@@ -85,15 +87,6 @@ class FindingRidePage extends ConsumerWidget {
                   SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
                     padding: AppSpacings.phM,
-                    child: Row(
-                      children: const [
-                        _FilterChip(label: 'All', isActive: true),
-                        AppSpacings.gapS,
-                        _FilterChip(label: 'Male only', isActive: false),
-                        AppSpacings.gapS,
-                        _FilterChip(label: 'Female only', isActive: false),
-                      ],
-                    ),
                   ),
                   AppSpacings.gapXL,
                   // Section: Trajets disponibles
@@ -126,7 +119,10 @@ class FindingRidePage extends ConsumerWidget {
                         price: '${ride.price} FCFA',
                         rating: 4.5, // Placeholder
                         seats: ride.numberOfSeats,
-                        avatarColor: Colors.blue, // Placeholder
+                        avatarColor: Colors.blue,
+                        onTap: () {
+                          context.push('${AppRoutes.rideDetails}/${ride.id}');
+                        },
                       );
                     },
                   ),
@@ -150,6 +146,7 @@ class _RideCard extends StatelessWidget {
   final double rating;
   final int seats;
   final Color avatarColor;
+  final VoidCallback? onTap;
 
   const _RideCard({
     required this.driverName,
@@ -159,121 +156,92 @@ class _RideCard extends StatelessWidget {
     required this.rating,
     required this.seats,
     required this.avatarColor,
+    this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: AppSpacings.phM,
-      child: Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          border: Border.all(color: context.colorScheme.outline, width: 1),
-          borderRadius: BorderRadius.circular(12),
-        ),
-        padding: AppSpacings.pL,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // En-tête: Avatar, nom, prix
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Avatar
-                CircleAvatar(
-                  radius: 28,
-                  backgroundColor: avatarColor,
-                  child: Text(
-                    rating.toString(),
-                    style: context.textTheme.labelSmall?.copyWith(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
+    return GestureDetector(
+      onTap: onTap,
+      child: Padding(
+        padding: AppSpacings.phM,
+        child: Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            border: Border.all(color: context.colorScheme.outline, width: 1),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          padding: AppSpacings.pL,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // En-tête: Avatar, nom, prix
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Avatar
+                  CircleAvatar(
+                    radius: 28,
+                    backgroundColor: avatarColor,
+                    child: Text(
+                      rating.toString(),
+                      style: context.textTheme.labelSmall?.copyWith(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
-                ),
-                AppSpacings.gapM,
-                // Informations du chauffeur
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        driverName,
-                        style: context.textTheme.titleSmall?.copyWith(
-                          fontWeight: FontWeight.w600,
+                  AppSpacings.gapM,
+                  // Informations du chauffeur
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          driverName,
+                          style: context.textTheme.titleSmall?.copyWith(
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
-                      ),
-                      AppSpacings.gapS,
-                      Row(
-                        children: [
-                          Text(
-                            departureTime,
-                            style: context.textTheme.bodySmall?.copyWith(
+                        AppSpacings.gapS,
+                        Row(
+                          children: [
+                            Text(
+                              departureTime,
+                              style: context.textTheme.bodySmall?.copyWith(
+                                color: context.colorScheme.onSurfaceVariant,
+                              ),
+                            ),
+                            AppSpacings.gapS,
+                            Icon(
+                              LucideIcons.users,
+                              size: 14,
                               color: context.colorScheme.onSurfaceVariant,
                             ),
-                          ),
-                          AppSpacings.gapS,
-                          Icon(
-                            LucideIcons.users,
-                            size: 14,
+                          ],
+                        ),
+                        AppSpacings.gapS,
+                        Text(
+                          distance,
+                          style: context.textTheme.bodySmall?.copyWith(
                             color: context.colorScheme.onSurfaceVariant,
                           ),
-                        ],
-                      ),
-                      AppSpacings.gapS,
-                      Text(
-                        distance,
-                        style: context.textTheme.bodySmall?.copyWith(
-                          color: context.colorScheme.onSurfaceVariant,
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-                // Prix
-                Text(
-                  price,
-                  style: context.textTheme.titleSmall?.copyWith(
-                    color: context.colorScheme.primary,
-                    fontWeight: FontWeight.w600,
+                  // Prix
+                  Text(
+                    price,
+                    style: context.textTheme.titleSmall?.copyWith(
+                      color: context.colorScheme.primary,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-/// Widget stateless pour un chip de filtre
-class _FilterChip extends StatelessWidget {
-  final String label;
-  final bool isActive;
-
-  const _FilterChip({required this.label, required this.isActive});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: AppSpacings.l,
-        vertical: AppSpacings.s,
-      ),
-      decoration: BoxDecoration(
-        color: isActive
-            ? context.colorScheme.primary
-            : context.colorScheme.secondaryContainer,
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Text(
-        label,
-        style: context.textTheme.labelSmall?.copyWith(
-          color: isActive
-              ? context.colorScheme.onPrimary
-              : context.colorScheme.onSecondaryContainer,
-          fontWeight: FontWeight.w600,
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );

@@ -3,6 +3,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 part 'ride.freezed.dart';
 part 'ride.g.dart';
 
+
 @freezed
 sealed class Ride with _$Ride {
   const factory Ride({

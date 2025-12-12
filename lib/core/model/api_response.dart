@@ -1,39 +1,14 @@
-class ApiResponse {
-  final bool success;
-  final List<dynamic> data;
+import 'package:freezed_annotation/freezed_annotation.dart';
+part 'api_response.freezed.dart';
+part 'api_response.g.dart';
 
-  ApiResponse({
-    required this.success,
-    this.data = const [],
-  });
+@Freezed(genericArgumentFactories: true)
+sealed class ApiResponse<T> with _$ApiResponse<T> {
+  const factory ApiResponse({required bool success, required T data}) =
+      _ApiResponse<T>;
 
-  factory ApiResponse.fromJson(dynamic json) {
-    return ApiResponse(
-      success: json['success'],
-      data: json['data'] ?? [],
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {'success': success, 'data': data};
-  }
-
-  // copyWith method
-  ApiResponse copyWith({bool? success, List<dynamic>? data}) {
-    return ApiResponse(
-      success: success ?? this.success,
-      data: data ?? this.data,
-    );
-  }
-
-  @override
-  int get hashCode => Object.hash(success, data);
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other is ApiResponse &&
-            other.success == success &&
-            other.data == data);
-  }
+  factory ApiResponse.fromJson(
+    Map<String, dynamic> json,
+    T Function(Object?) fromJsonT,
+  ) => _$ApiResponseFromJson(json, fromJsonT);
 }

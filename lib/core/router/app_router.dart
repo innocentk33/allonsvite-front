@@ -1,6 +1,7 @@
 import 'package:allonsvite/features/auth/data/auth_providers.dart';
-import 'package:allonsvite/features/rides/domain/ride.dart';
+import 'package:allonsvite/features/rides/domain/model/ride.dart';
 import 'package:allonsvite/features/rides/presentation/pages/location_search_page.dart';
+import 'package:allonsvite/features/rides/presentation/pages/ride_detail_page.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:allonsvite/features/auth/presentation/pages/phone_login_page.dart';
@@ -137,8 +138,11 @@ GoRouter appRouter(Ref ref) {
 
       // Route Ride Details
       GoRoute(
-        path: AppRoutes.rideDetails,
-        builder: (context, state) => const SizedBox.shrink(), // À implémenter
+        path: '${AppRoutes.rideDetails}/:id',
+        builder: (context, state) {
+          final id = int.parse(state.pathParameters['id']!);
+          return RideDetailPage(rideId: id);
+        },
       ),
 
       // Route Payment
