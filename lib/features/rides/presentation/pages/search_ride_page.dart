@@ -1,6 +1,5 @@
 import 'package:allonsvite/core/router/app_routes.dart';
 import 'package:allonsvite/features/rides/domain/location.dart';
-import 'package:allonsvite/features/rides/domain/model/ride.dart';
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -18,7 +17,7 @@ class SearchRidePage extends StatefulWidget {
 class _SearchRidePageState extends State<SearchRidePage> {
   late TextEditingController _fromController;
   late TextEditingController _toController;
-  int _numberOfPeople = 0;
+  int _numberOfPeople = 1;
   DateTime _selectedDate = DateTime.now();
 
   @override
@@ -103,13 +102,36 @@ class _SearchRidePageState extends State<SearchRidePage> {
   }
 
   void _findRide() {
-    final params = RideSearchParams(
-      fromLocation: _fromController.text,
-      toLocation: _toController.text,
-      date: _selectedDate,
-      seats: _numberOfPeople,
-    );
+    if (_fromController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(context.l10n.selectDepartureLocationError)),
+      );
+      return;
+    }
+    if (_toController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(context.l10n.selectDestinationError)),
+      );
+      return;
+    }
+
+    /* 
+    // OLD: Passing object in extra (Caused GoRouter warning)
+    final params = RideSearchParams( ... );
     context.push(AppRoutes.findingRide, extra: params);
+    */
+
+    // NEW: Passing parameters in query string (Deep link friendly & no warnings)
+    final uri = Uri(
+      path: AppRoutes.findingRide,
+      queryParameters: {
+        'fromLocation': _fromController.text,
+        'toLocation': _toController.text,
+        'date': _selectedDate.toIso8601String(),
+        'seats': _numberOfPeople.toString(),
+      },
+    );
+    context.push(uri.toString());
   }
 
   Future<void> _showPeopleDialog() async {
@@ -131,7 +153,7 @@ class _SearchRidePageState extends State<SearchRidePage> {
               children: [
                 AppSpacings.gapL,
                 Text(
-                  'Combien de sièges voulez-vous ?',
+                  context.l10n.howManySeats,
                   style: context.textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.w600,
                   ),
@@ -201,7 +223,7 @@ class _SearchRidePageState extends State<SearchRidePage> {
                       padding: const EdgeInsets.symmetric(vertical: 14),
                     ),
                     child: Text(
-                      'Confirmer',
+                      context.l10n.confirm,
                       style: context.textTheme.labelLarge,
                     ),
                   ),
@@ -237,7 +259,7 @@ class _SearchRidePageState extends State<SearchRidePage> {
                     AppSpacings.gapL,
                     // Titre avec nom de l'utilisateur
                     Text(
-                      'Bonjour',
+                      context.l10n.hello,
                       style: context.textTheme.headlineLarge?.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
@@ -273,7 +295,8 @@ class _SearchRidePageState extends State<SearchRidePage> {
                                 child: _SearchTextField(
                                   onTap: _selectFromLocation,
                                   controller: _fromController,
-                                  placeholder: 'From de ouf',
+                                  placeholder:
+                                      context.l10n.searchFromPlaceholder,
                                   readOnly: true,
                                 ),
                               ),
@@ -295,7 +318,7 @@ class _SearchRidePageState extends State<SearchRidePage> {
                           _SearchTextField(
                             onTap: _selectToLocation,
                             controller: _toController,
-                            placeholder: 'To',
+                            placeholder: context.l10n.searchToPlaceholder,
                             readOnly: true,
                           ),
                           AppSpacings.gapM,
@@ -356,7 +379,7 @@ class _SearchRidePageState extends State<SearchRidePage> {
                     elevation: 0,
                   ),
                   child: Text(
-                    'Find a Ride',
+                    context.l10n.findARide,
                     style: context.textTheme.labelLarge?.copyWith(fontSize: 16),
                   ),
                 ),

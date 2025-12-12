@@ -29,7 +29,7 @@ class RideDetailPage extends ConsumerWidget {
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
-          'BOOK RIDE',
+          context.l10n.bookRide,
           style: context.textTheme.titleMedium?.copyWith(
             fontWeight: FontWeight.bold,
             color: Colors.black,
@@ -93,20 +93,20 @@ class _AddressCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Departure',
+            context.l10n.departure,
             style: context.textTheme.titleMedium?.copyWith(
               fontWeight: FontWeight.bold,
             ),
           ),
           AppSpacings.gapM,
-          _buildAddressRow(context, 'FROM', ride.pickupSpot),
+          _buildAddressRow(context, context.l10n.from, ride.pickupSpot),
           const Divider(height: 24, thickness: 0.5),
-          _buildAddressRow(context, 'TO', ride.arrivalSpot),
+          _buildAddressRow(context, context.l10n.to, ride.arrivalSpot),
           const Divider(height: 24, thickness: 0.5),
           // Using pickupSpot/arrivalSpot again as we don't have separate fields
-          _buildAddressRow(context, 'PICK UP', ride.pickupSpot),
+          _buildAddressRow(context, context.l10n.pickUp, ride.pickupSpot),
           const Divider(height: 24, thickness: 0.5),
-          _buildAddressRow(context, 'DROP OFF', ride.arrivalSpot),
+          _buildAddressRow(context, context.l10n.dropOff, ride.arrivalSpot),
         ],
       ),
     );
@@ -165,13 +165,13 @@ class _RideOptions extends StatelessWidget {
             _buildOptionRow(
               context,
               LucideIcons.clock,
-              'Start',
+              context.l10n.start,
               DateFormat('HH:mm').format(ride.startAt),
             ),
             _buildOptionRow(
               context,
               LucideIcons.clock,
-              'End',
+              context.l10n.end,
               DateFormat('HH:mm').format(ride.endAt),
             ),
           ],
@@ -181,7 +181,7 @@ class _RideOptions extends StatelessWidget {
         _buildOptionRow(
           context,
           LucideIcons.user,
-          'Seats',
+          context.l10n.seats,
           '${ride.numberOfSeats}',
           isDropdown: true,
         ),
@@ -340,7 +340,7 @@ class _BottomSection extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'Total price',
+                  context.l10n.totalPrice,
                   style: context.textTheme.bodyMedium?.copyWith(
                     color: context.colorScheme.onSurfaceVariant,
                     fontWeight: FontWeight.w500,
@@ -361,7 +361,7 @@ class _BottomSection extends StatelessWidget {
                 // TODO: Implement Booking Logic
               },
               isLoading: false, // TODO: Connect to controller state
-              buttonText: 'Confirm',
+              buttonText: context.l10n.confirm,
             ),
           ],
         ),

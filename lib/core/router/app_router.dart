@@ -127,7 +127,25 @@ GoRouter appRouter(Ref ref) {
       GoRoute(
         path: AppRoutes.findingRide,
         builder: (context, state) {
-          final params = state.extra as RideSearchParams?;
+          final query = state.uri.queryParameters;
+
+          RideSearchParams? params;
+          if (query.isNotEmpty) {
+            params = RideSearchParams(
+              fromLocation: query['fromLocation'],
+              toLocation: query['toLocation'],
+              date: query['date'] != null
+                  ? DateTime.tryParse(query['date']!)
+                  : null,
+              seats: query['seats'] != null
+                  ? int.tryParse(query['seats']!)
+                  : 1, // Default to 1
+            );
+          } else {
+            // Fallback to extra if still used somewhere (optional, but good for backward compat during dev)
+            params = state.extra as RideSearchParams?;
+          }
+
           return FindingRidePage(params: params ?? const RideSearchParams());
         },
       ),

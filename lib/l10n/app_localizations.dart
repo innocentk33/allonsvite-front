@@ -421,6 +421,156 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'People'**
   String get people;
+
+  /// No description provided for @hello.
+  ///
+  /// In en, this message translates to:
+  /// **'Hello'**
+  String get hello;
+
+  /// No description provided for @searchFromPlaceholder.
+  ///
+  /// In en, this message translates to:
+  /// **'From'**
+  String get searchFromPlaceholder;
+
+  /// No description provided for @searchToPlaceholder.
+  ///
+  /// In en, this message translates to:
+  /// **'To'**
+  String get searchToPlaceholder;
+
+  /// No description provided for @howManySeats.
+  ///
+  /// In en, this message translates to:
+  /// **'How many seats you need?'**
+  String get howManySeats;
+
+  /// No description provided for @confirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm'**
+  String get confirm;
+
+  /// No description provided for @findARide.
+  ///
+  /// In en, this message translates to:
+  /// **'Find a Ride'**
+  String get findARide;
+
+  /// No description provided for @selectDepartureLocationError.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select a departure location'**
+  String get selectDepartureLocationError;
+
+  /// No description provided for @selectDestinationError.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select a destination'**
+  String get selectDestinationError;
+
+  /// No description provided for @selectPassengerError.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select at least one passenger'**
+  String get selectPassengerError;
+
+  /// No description provided for @noRidesFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No rides found.'**
+  String get noRidesFound;
+
+  /// No description provided for @seats.
+  ///
+  /// In en, this message translates to:
+  /// **'Seats'**
+  String get seats;
+
+  /// No description provided for @passenger.
+  ///
+  /// In en, this message translates to:
+  /// **'Passenger'**
+  String get passenger;
+
+  /// No description provided for @passengers.
+  ///
+  /// In en, this message translates to:
+  /// **'Passengers'**
+  String get passengers;
+
+  /// No description provided for @availableRides.
+  ///
+  /// In en, this message translates to:
+  /// **'AVAILABLE RIDES'**
+  String get availableRides;
+
+  /// No description provided for @bookRide.
+  ///
+  /// In en, this message translates to:
+  /// **'BOOK RIDE'**
+  String get bookRide;
+
+  /// No description provided for @departure.
+  ///
+  /// In en, this message translates to:
+  /// **'Departure'**
+  String get departure;
+
+  /// No description provided for @from.
+  ///
+  /// In en, this message translates to:
+  /// **'FROM'**
+  String get from;
+
+  /// No description provided for @to.
+  ///
+  /// In en, this message translates to:
+  /// **'TO'**
+  String get to;
+
+  /// No description provided for @pickUp.
+  ///
+  /// In en, this message translates to:
+  /// **'PICK UP'**
+  String get pickUp;
+
+  /// No description provided for @dropOff.
+  ///
+  /// In en, this message translates to:
+  /// **'DROP OFF'**
+  String get dropOff;
+
+  /// No description provided for @start.
+  ///
+  /// In en, this message translates to:
+  /// **'Start'**
+  String get start;
+
+  /// No description provided for @end.
+  ///
+  /// In en, this message translates to:
+  /// **'End'**
+  String get end;
+
+  /// No description provided for @driver.
+  ///
+  /// In en, this message translates to:
+  /// **'Driver'**
+  String get driver;
+
+  /// No description provided for @totalPrice.
+  ///
+  /// In en, this message translates to:
+  /// **'Total price'**
+  String get totalPrice;
+
+  /// No description provided for @errorPrefix.
+  ///
+  /// In en, this message translates to:
+  /// **'Error: {error}'**
+  String errorPrefix(String error);
 }
 
 class _AppLocalizationsDelegate
