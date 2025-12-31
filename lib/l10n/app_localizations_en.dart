@@ -157,4 +157,97 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get trips => 'trips';
+
+  @override
+  String get homeGreetingMessage => 'What would you like to do today?';
+
+  @override
+  String get today => 'Today';
+
+  @override
+  String get tomorrow => 'Tomorrow';
+
+  @override
+  String get person => 'Person';
+
+  @override
+  String get people => 'People';
+
+  @override
+  String get hello => 'Hello';
+
+  @override
+  String get searchFromPlaceholder => 'From';
+
+  @override
+  String get searchToPlaceholder => 'To';
+
+  @override
+  String get howManySeats => 'How many seats you need?';
+
+  @override
+  String get confirm => 'Confirm';
+
+  @override
+  String get findARide => 'Find a Ride';
+
+  @override
+  String get selectDepartureLocationError =>
+      'Please select a departure location';
+
+  @override
+  String get selectDestinationError => 'Please select a destination';
+
+  @override
+  String get selectPassengerError => 'Please select at least one passenger';
+
+  @override
+  String get noRidesFound => 'No rides found.';
+
+  @override
+  String get seats => 'Seats';
+
+  @override
+  String get passenger => 'Passenger';
+
+  @override
+  String get passengers => 'Passengers';
+
+  @override
+  String get availableRides => 'AVAILABLE RIDES';
+
+  @override
+  String get bookRide => 'BOOK RIDE';
+
+  @override
+  String get departure => 'Departure';
+
+  @override
+  String get from => 'FROM';
+
+  @override
+  String get to => 'TO';
+
+  @override
+  String get pickUp => 'PICK UP';
+
+  @override
+  String get dropOff => 'DROP OFF';
+
+  @override
+  String get start => 'Start';
+
+  @override
+  String get end => 'End';
+
+  @override
+  String get driver => 'Driver';
+
+  @override
+  String get totalPrice => 'Total price';
+
+  @override
+  String errorPrefix(String error) {
+    return 'Error: $error';
+  }
 }

@@ -157,4 +157,98 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get trips => 'voyages';
+
+  @override
+  String get homeGreetingMessage => 'Que souhaitez-vous faire aujourd\'hui ?';
+
+  @override
+  String get today => 'Aujourd\'hui';
+
+  @override
+  String get tomorrow => 'Demain';
+
+  @override
+  String get person => 'Person';
+
+  @override
+  String get people => 'Personnes';
+
+  @override
+  String get hello => 'Bonjour';
+
+  @override
+  String get searchFromPlaceholder => 'De ?';
+
+  @override
+  String get searchToPlaceholder => 'Vers ?';
+
+  @override
+  String get howManySeats => 'Combien de sièges voulez-vous ?';
+
+  @override
+  String get confirm => 'Confirmer';
+
+  @override
+  String get findARide => 'Rechercher un trajet';
+
+  @override
+  String get selectDepartureLocationError =>
+      'Veuillez sélectionner un lieu de départ';
+
+  @override
+  String get selectDestinationError => 'Veuillez sélectionner une destination';
+
+  @override
+  String get selectPassengerError =>
+      'Veuillez sélectionner au moins un passager';
+
+  @override
+  String get noRidesFound => 'Aucun trajet trouvé.';
+
+  @override
+  String get seats => 'Sièges';
+
+  @override
+  String get passenger => 'Passager';
+
+  @override
+  String get passengers => 'Passagers';
+
+  @override
+  String get availableRides => 'TRAJETS DISPONIBLES';
+
+  @override
+  String get bookRide => 'RÉSERVER UN TRAJET';
+
+  @override
+  String get departure => 'Départ';
+
+  @override
+  String get from => 'DE';
+
+  @override
+  String get to => 'À';
+
+  @override
+  String get pickUp => 'RAMASSAGE';
+
+  @override
+  String get dropOff => 'DÉPOSE';
+
+  @override
+  String get start => 'Début';
+
+  @override
+  String get end => 'Fin';
+
+  @override
+  String get driver => 'Chauffeur';
+
+  @override
+  String get totalPrice => 'Prix total';
+
+  @override
+  String errorPrefix(String error) {
+    return 'Erreur : $error';
+  }
 }

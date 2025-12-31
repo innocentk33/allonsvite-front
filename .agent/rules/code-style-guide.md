@@ -1,3 +1,7 @@
+---
+trigger: always_on
+---
+
 You are an expert Senior Flutter Developer and UI/UX Designer specialized in building modern, scalable mobile applications.
 # Project: Allons Vite (Carpooling MVP - Côte d'Ivoire)
 ## Tech Stack & Architecture

@@ -1,17 +1,20 @@
 import 'package:allonsvite/features/auth/data/auth_providers.dart';
+import 'package:allonsvite/features/rides/domain/model/ride.dart';
+import 'package:allonsvite/features/rides/presentation/pages/location_search_page.dart';
+import 'package:allonsvite/features/rides/presentation/pages/ride_detail_page.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:allonsvite/features/auth/presentation/pages/phone_login_page.dart';
 import 'package:allonsvite/features/auth/presentation/pages/otp_verification_page.dart';
 import 'package:allonsvite/features/auth/presentation/pages/create_profil_page.dart';
 import 'package:allonsvite/features/navigation/home_page.dart';
-import 'package:allonsvite/features/trips/finding_ride.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-
 import '../../features/navigation/splash_page.dart';
+import '../../features/rides/presentation/pages/finding_ride_page.dart';
 import 'app_routes.dart';
 part 'app_router.g.dart';
+
 // Provider pour GoRouter
 // Dépend de l'état d'authentification pour rediriger correctement
 @riverpod
@@ -22,8 +25,8 @@ GoRouter appRouter(Ref ref) {
   return GoRouter(
     initialLocation: AppRoutes.home,
     debugLogDiagnostics: true,
-    redirect: (context, state) async{
-// 1. Récupération des données asynchrones
+    redirect: (context, state) async {
+      // 1. Récupération des données asynchrones
       // Est-ce que j'ai un token ?
       final tokenOption = await authRepo.checkAuthStatus();
       final isLoggedIn = tokenOption.isSome();
@@ -108,16 +111,14 @@ GoRouter appRouter(Ref ref) {
         routes: [
           // Routes imbriquées sous home
           GoRoute(
-            path: 'search-trip',
-            builder: (context, state) => const SizedBox.shrink(), // À implémenter
+            path: AppRoutes.notifications,
+            builder: (context, state) =>
+                const SizedBox.shrink(), // À implémenter
           ),
           GoRoute(
-            path: 'notifications',
-            builder: (context, state) => const SizedBox.shrink(), // À implémenter
-          ),
-          GoRoute(
-            path: 'settings',
-            builder: (context, state) => const SizedBox.shrink(), // À implémenter
+            path: AppRoutes.settings,
+            builder: (context, state) =>
+                const SizedBox.shrink(), // À implémenter
           ),
         ],
       ),
@@ -125,13 +126,41 @@ GoRouter appRouter(Ref ref) {
       // Route Finding Ride - Recherche de trajet
       GoRoute(
         path: AppRoutes.findingRide,
-        builder: (context, state) => const FindingRidePage(),
+        builder: (context, state) {
+          final query = state.uri.queryParameters;
+
+          RideSearchParams? params;
+          if (query.isNotEmpty) {
+            params = RideSearchParams(
+              fromLocation: query['fromLocation'],
+              toLocation: query['toLocation'],
+              date: query['date'] != null
+                  ? DateTime.tryParse(query['date']!)
+                  : null,
+              seats: query['seats'] != null
+                  ? int.tryParse(query['seats']!)
+                  : 1, // Default to 1
+            );
+          } else {
+            // Fallback to extra if still used somewhere (optional, but good for backward compat during dev)
+            params = state.extra as RideSearchParams?;
+          }
+
+          return FindingRidePage(params: params ?? const RideSearchParams());
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.findLocation,
+        builder: (context, state) => const LocationSearchPage(),
       ),
 
       // Route Ride Details
       GoRoute(
-        path: AppRoutes.rideDetails,
-        builder: (context, state) => const SizedBox.shrink(), // À implémenter
+        path: '${AppRoutes.rideDetails}/:id',
+        builder: (context, state) {
+          final id = int.parse(state.pathParameters['id']!);
+          return RideDetailPage(rideId: id);
+        },
       ),
 
       // Route Payment
@@ -188,11 +217,7 @@ GoRouter appRouter(Ref ref) {
         builder: (context, state) => const SizedBox.shrink(), // À implémenter
       ),
     ],
-    errorBuilder: (context, state) => Scaffold(
-      body: Center(
-        child: Text('Erreur 404: ${state.error}'),
-      ),
-    ),
+    errorBuilder: (context, state) =>
+        Scaffold(body: Center(child: Text('Erreur 404: ${state.error}'))),
   );
 }
-

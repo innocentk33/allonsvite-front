@@ -3,6 +3,14 @@
   "@helloWorld": {
     "description": "The conventional newborn programmer greeting"
   },
+  "@errorPrefix": {
+    "placeholders": {
+      "error": {
+         "type": "String",
+         "example": "Network error"
+      }
+    }
+  },
   "slogan": "Chap Chap",
   "phoneLoginTitle": "Enter Your Contact Details",
   "phoneLoginSubtitle": "Enter your phone number we will send you a verification code",
@@ -50,5 +58,35 @@
   "takePhotoMessage": "Help drivers or riders identify you more easily, this increases trust.",
   "welcomeMessage": "Welcome to my app",
   "loginButton": "Log In",
-  "trips": "trips"
+  "trips": "trips",
+  "homeGreetingMessage": "What would you like to do today?",
+  "today": "Today",
+  "tomorrow": "Tomorrow",
+  "person": "Person",
+  "people": "People",
+  "hello": "Hello",
+  "searchFromPlaceholder": "From",
+  "searchToPlaceholder": "To",
+  "howManySeats": "How many seats you need?",
+  "confirm": "Confirm",
+  "findARide": "Find a Ride",
+  "selectDepartureLocationError": "Please select a departure location",
+  "selectDestinationError": "Please select a destination",
+  "selectPassengerError": "Please select at least one passenger",
+  "noRidesFound": "No rides found.",
+  "seats": "Seats",
+  "passenger": "Passenger",
+  "passengers": "Passengers",
+  "availableRides": "AVAILABLE RIDES",
+  "bookRide": "BOOK RIDE",
+  "departure": "Departure",
+  "from": "FROM",
+  "to": "TO",
+  "pickUp": "PICK UP",
+  "dropOff": "DROP OFF",
+  "start": "Start",
+  "end": "End",
+  "driver": "Driver",
+  "totalPrice": "Total price",
+  "errorPrefix": "Error: {error}"
 }

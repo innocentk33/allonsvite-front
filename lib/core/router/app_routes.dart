@@ -5,7 +5,7 @@ sealed class AppRoutes {
   static const String createProfile = '/create-profile';
   static const String home = '/home';
   static const String splash = '/splash';
-  static const String searchTrip = '/search-trip';
+  static const String searchRide = '/search-ride';
   static const String findingRide = '/finding-ride';
   static const String rideDetails = '/ride-details';
   static const String payment = '/payment';
@@ -19,4 +19,5 @@ sealed class AppRoutes {
   static const String termsAndConditions = '/terms-and-conditions';
   static const String helpAndSupport = '/help-and-support';
   static const String language = '/language';
+  static const String findLocation = '/find-location';
 }
